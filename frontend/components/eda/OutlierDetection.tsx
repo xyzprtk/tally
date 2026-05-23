@@ -16,7 +16,7 @@ export function OutlierDetection() {
 
   const loadSummary = useCallback(async () => {
     const result = await getOutliersSummary();
-    if (result.type === "table" && result.data && "rows" in result.data) {
+    if (result.type === "table" && result.data && "rows" in (result.data as any)) {
       setRows((result.data as any).rows as OutlierRow[]);
     }
   }, []);

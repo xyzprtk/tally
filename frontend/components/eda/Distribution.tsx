@@ -41,7 +41,7 @@ export function Distribution() {
         <div className="flex items-end gap-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Select Column</label>
-            <Select value={selectedCol} onValueChange={(v) => setSelectedCol(v)}>
+            <Select value={selectedCol} onValueChange={(v: string | null) => setSelectedCol(v ?? "")}>
               <SelectTrigger className="w-[200px]"><SelectValue /></SelectTrigger>
               <SelectContent>
                 {colList.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}

@@ -12,8 +12,8 @@ export function ValueCounts() {
 
   const load = useCallback(async () => {
     const result = await run(() => getValueCounts(20));
-    if (result?.data?.columns) {
-      setColumns(result.data.columns);
+    if (result?.data) {
+      setColumns((result.data as any).columns);
     }
   }, [run]);
 

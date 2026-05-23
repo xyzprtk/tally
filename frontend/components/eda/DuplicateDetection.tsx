@@ -31,8 +31,9 @@ export function DuplicateDetection() {
   const handleView = async () => {
     const result = await run(() => getDuplicates(selectedCols.length > 0 ? selectedCols : undefined));
     if (result?.data) {
-      setSummary(result.data.summary);
-      setDuplicateRows(result.data.duplicate_rows);
+      const d = result.data as any;
+      setSummary(d.summary);
+      setDuplicateRows(d.duplicate_rows);
       setShowDuplicates(true);
     }
   };

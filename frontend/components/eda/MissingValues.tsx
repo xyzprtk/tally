@@ -27,7 +27,7 @@ export function MissingValues() {
 
   const load = useCallback(async () => {
     const result = await getMissingSummary(sortBy, sortDir);
-    if (result.type === "table" && result.data && "rows" in result.data) {
+    if (result.type === "table" && result.data && "rows" in (result.data as any)) {
       setRows((result.data as any).rows as MissingRow[]);
     }
   }, [sortBy, sortDir]);
@@ -107,7 +107,7 @@ export function MissingValues() {
                     <div className="flex items-center gap-1">
                       <Select
                         value={fillMethods[row.column] || ""}
-                        onValueChange={(v) => setFillMethods((p) => ({ ...p, [row.column]: v }))}
+                        onValueChange={(v: string | null) => setFillMethods((p) => ({ ...p, [row.column]: v ?? "" }))}
                       >
                         <SelectTrigger className="w-[130px]">
                           <SelectValue placeholder="Method..." />

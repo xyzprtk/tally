@@ -68,7 +68,7 @@ export function DtypeManagement() {
                     {col.options.length > 0 ? (
                       <Select
                         value={changes[col.name] || ""}
-                        onValueChange={(v) => setChanges((p) => ({ ...p, [col.name]: v }))}
+                        onValueChange={(v: string | null) => setChanges((p) => ({ ...p, [col.name]: v ?? "" }))}
                       >
                         <SelectTrigger className="w-[140px]">
                           <SelectValue placeholder="Select..." />

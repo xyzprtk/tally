@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 interface EdaState {
   isLoading: boolean;
@@ -10,7 +10,7 @@ interface EdaState {
 export function useEda() {
   const [state, setState] = useState<EdaState>({ isLoading: false, error: null });
 
-  const run = async <T,>(fn: () => Promise<T>): Promise<T | null> => {
+  const run = useCallback(async <T,>(fn: () => Promise<T>): Promise<T | null> => {
     setState({ isLoading: true, error: null });
     try {
       const result = await fn();
@@ -20,7 +20,7 @@ export function useEda() {
       setState({ isLoading: false, error: e.message || "Operation failed" });
       return null;
     }
-  };
+  }, []);
 
   return {
     isLoading: state.isLoading,
