@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import upload, analyze
+from routers import upload, analyze, chat
 
 app = FastAPI(title="AI Data Analyst")
 
@@ -15,3 +15,4 @@ app.add_middleware(
 
 app.include_router(upload.router)
 app.include_router(analyze.router)
+app.include_router(chat.router)
