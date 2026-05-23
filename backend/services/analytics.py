@@ -155,6 +155,48 @@ def correlation_heatmap(df: pd.DataFrame, params: dict) -> BasicAnalyticsRespons
     return BasicAnalyticsResponse(type="image", data=b64)
 
 
+def _apply_comparison(series: pd.Series, operator: str, value: str):
+    """Apply a comparison operator to a series, auto-detecting dtype."""
+    if operator == "==":
+        return series.astype(str) == value
+    if operator == "!=":
+        return series.astype(str) != value
+    if operator == "contains":
+        return series.astype(str).str.contains(value, case=False, na=False)
+
+    try:
+        num_series = pd.to_numeric(series, errors="raise")
+        num_value = float(value)
+    except (ValueError, TypeError):
+        try:
+            dt_series = pd.to_datetime(series, errors="raise")
+            dt_value = pd.to_datetime(value)
+            if operator == ">":
+                return dt_series > dt_value
+            if operator == "<":
+                return dt_series < dt_value
+            if operator == ">=":
+                return dt_series >= dt_value
+            if operator == "<=":
+                return dt_series <= dt_value
+        except (ValueError, TypeError):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Column '{series.name}' is not numeric or datetime — comparison operators only work on numbers and dates",
+            )
+
+    if operator == ">":
+        return num_series > num_value
+    if operator == "<":
+        return num_series < num_value
+    if operator == ">=":
+        return num_series >= num_value
+    if operator == "<=":
+        return num_series <= num_value
+
+    raise HTTPException(status_code=400, detail=f"Unsupported operator: {operator}")
+
+
 def filter_rows(df: pd.DataFrame, params: dict) -> BasicAnalyticsResponse:
     col = params["column"]
     operator = params["operator"]
@@ -162,21 +204,15 @@ def filter_rows(df: pd.DataFrame, params: dict) -> BasicAnalyticsResponse:
     if col not in df.columns:
         raise HTTPException(status_code=400, detail=f"Column '{col}' not found")
 
-    op_map = {
-        "==": lambda s, v: s == v,
-        "!=": lambda s, v: s != v,
-        ">": lambda s, v: pd.to_numeric(s, errors="coerce") > float(v),
-        "<": lambda s, v: pd.to_numeric(s, errors="coerce") < float(v),
-        ">=": lambda s, v: pd.to_numeric(s, errors="coerce") >= float(v),
-        "<=": lambda s, v: pd.to_numeric(s, errors="coerce") <= float(v),
-        "contains": lambda s, v: s.astype(str).str.contains(v, case=False, na=False),
-    }
-    if operator not in op_map:
+    operators = {"==", "!=", ">", "<", ">=", "<=", "contains"}
+    if operator not in operators:
         raise HTTPException(status_code=400, detail=f"Unsupported operator: {operator}")
 
     try:
-        mask = op_map[operator](df[col], value)
+        mask = _apply_comparison(df[col], operator, value)
         result = df[mask]
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Filter failed: {str(e)}")
 
