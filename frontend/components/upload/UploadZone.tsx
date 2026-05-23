@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
 
@@ -12,6 +12,7 @@ interface Props {
 
 export function UploadZone({ onUpload, isLoading, error }: Props) {
   const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = useCallback((file: File) => {
     const ext = file.name.split(".").pop()?.toLowerCase();
@@ -45,12 +46,14 @@ export function UploadZone({ onUpload, isLoading, error }: Props) {
       <p className="text-sm text-muted-foreground mb-4">
         Drag and drop a CSV or JSON file, or click to browse
       </p>
-      <label>
-        <Button variant="outline" disabled={isLoading} className="pointer-events-none">
-          {isLoading ? "Uploading..." : "Choose File"}
-        </Button>
-        <input type="file" accept=".csv,.json" onChange={handleChange} className="hidden" />
-      </label>
+      <Button
+        variant="outline"
+        disabled={isLoading}
+        onClick={() => fileInputRef.current?.click()}
+      >
+        {isLoading ? "Uploading..." : "Choose File"}
+      </Button>
+      <input ref={fileInputRef} type="file" accept=".csv,.json" onChange={handleChange} className="hidden" />
       {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
     </div>
   );

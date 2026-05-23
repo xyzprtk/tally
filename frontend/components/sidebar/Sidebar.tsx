@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -11,6 +12,13 @@ interface Props {
 }
 
 export function Sidebar({ dataset, onUploadNew }: Props) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (f) onUploadNew(f);
+  };
+
   return (
     <aside className="w-[280px] border-r bg-background flex flex-col shrink-0">
       <div className="p-4 border-b">
@@ -63,17 +71,21 @@ export function Sidebar({ dataset, onUploadNew }: Props) {
       </ScrollArea>
 
       <div className="p-4 border-t">
-        <label>
-          <Button variant="outline" size="sm" className="w-full pointer-events-none">
-            Upload New Dataset
-          </Button>
-          <input
-            type="file"
-            accept=".csv,.json"
-            onChange={(e) => { const f = e.target.files?.[0]; if (f) onUploadNew(f); }}
-            className="hidden"
-          />
-        </label>
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full"
+          onClick={() => fileInputRef.current?.click()}
+        >
+          Upload New Dataset
+        </Button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".csv,.json"
+          onChange={handleFileChange}
+          className="hidden"
+        />
       </div>
     </aside>
   );
