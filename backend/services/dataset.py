@@ -62,5 +62,14 @@ def clear_dataset() -> None:
     _filename = None
 
 
+def set_dataset(df: pd.DataFrame) -> None:
+    global _df
+    _df = df
+
+
+def get_filename() -> str:
+    return _filename or "dataset"
+
+
 def has_dataset() -> bool:
     return _df is not None
