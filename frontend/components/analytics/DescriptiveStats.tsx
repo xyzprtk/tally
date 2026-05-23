@@ -16,7 +16,10 @@ export function DescriptiveStats() {
 
   if (!loaded) {
     getDatasetInfo().then((info) => {
-      setColList(info.columns.map((c) => c.name));
+      const numericCols = info.columns
+        .filter((c) => c.dtype.startsWith("int") || c.dtype.startsWith("float"))
+        .map((c) => c.name);
+      setColList(numericCols);
       setLoaded(true);
     });
   }
