@@ -5,7 +5,7 @@ from fastapi import HTTPException
 PROVIDERS = {
     "openrouter": {
         "url": "https://openrouter.ai/api/v1/chat/completions",
-        "default_model": "anthropic/claude-3.5-sonnet",
+        "default_model": "deepseek/deepseek-v4-flash",
     },
     "groq": {
         "url": "https://api.groq.com/openai/v1/chat/completions",
