@@ -5,11 +5,12 @@ from fastapi import UploadFile, HTTPException
 from models.schemas import ColumnInfo, UploadResponse
 
 _df: pd.DataFrame | None = None
+_original_df: pd.DataFrame | None = None
 _filename: str | None = None
 
 
 def load_dataset(file: UploadFile) -> UploadResponse:
-    global _df, _filename
+    global _df, _original_df, _filename
 
     filename = file.filename or "unknown"
     ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
@@ -32,6 +33,7 @@ def load_dataset(file: UploadFile) -> UploadResponse:
     if _df is None or _df.empty or len(_df.columns) == 0:
         raise HTTPException(status_code=400, detail="Dataset must have at least 1 row and 1 column")
 
+    _original_df = _df.copy()
     _filename = filename
 
     columns = [ColumnInfo(name=str(col), dtype=str(_df[col].dtype)) for col in _df.columns]
@@ -57,9 +59,27 @@ def get_columns() -> list[ColumnInfo]:
 
 
 def clear_dataset() -> None:
-    global _df, _filename
+    global _df, _original_df, _filename
     _df = None
+    _original_df = None
     _filename = None
+
+
+def restore_original() -> pd.DataFrame:
+    global _df
+    if _original_df is None:
+        raise HTTPException(status_code=400, detail="No original dataset to restore")
+    _df = _original_df.copy()
+    return _df
+
+
+def set_dataset(df: pd.DataFrame) -> None:
+    global _df
+    _df = df
+
+
+def get_filename() -> str:
+    return _filename or "dataset"
 
 
 def has_dataset() -> bool:
