@@ -4,3 +4,7 @@ export { IsoVisualizations } from "./IsoVisualizations";
 export { IsoDataOps } from "./IsoDataOps";
 export { IsoEDA } from "./IsoEDA";
 export { IsoLLMChat } from "./IsoLLMChat";
+export { IsoHowUpload } from "./IsoHowUpload";
+export { IsoHowExplore } from "./IsoHowExplore";
+export { IsoHowAsk } from "./IsoHowAsk";
+export { IsoHowExport } from "./IsoHowExport";
