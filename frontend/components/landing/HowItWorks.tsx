@@ -94,7 +94,7 @@ export function HowItWorks() {
                 onHoverEnd={() => setHoveredCard(null)}
                 className="relative"
               >
-                <div className="group relative rounded-2xl border border-border bg-card p-6 md:p-7 transition-all duration-300 hover:border-[#C05C46]/30 hover:-translate-y-0.5 hover:shadow-[0_12px_40px_-12px_rgba(192,92,70,0.12)] overflow-hidden">
+                <div className="group relative rounded-2xl border border-border bg-card p-6 md:p-7 transition-all duration-300 hover:-translate-y-0.5 overflow-hidden">
                   {/* Step number watermark */}
                   <span className="absolute top-2 left-3 text-5xl md:text-6xl font-bold text-muted/15 tracking-tighter leading-none select-none pointer-events-none">
                     {step.number}

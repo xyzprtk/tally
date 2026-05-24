@@ -130,7 +130,7 @@ export function Features() {
                 variants={cardVariants}
                 onHoverStart={() => setHoveredCard(feature.title)}
                 onHoverEnd={() => setHoveredCard(null)}
-                className={`group relative rounded-2xl border border-border bg-card p-6 md:p-8 transition-all duration-300 hover:border-[#C05C46]/30 hover:-translate-y-0.5 hover:shadow-[0_12px_40px_-12px_rgba(192,92,70,0.12)] overflow-hidden ${feature.span}`}
+                className={`group relative rounded-2xl border border-border bg-card p-6 md:p-8 transition-all duration-300 hover:-translate-y-0.5 overflow-hidden ${feature.span}`}
               >
                 {/* Isometric illustration - top right */}
                 <motion.div
