@@ -1,6 +1,8 @@
 import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
 import { Features } from "@/components/landing/Features";
+import { HowItWorks } from "@/components/landing/HowItWorks";
+import { FAQ } from "@/components/landing/FAQ";
 
 export default function LandingPage() {
   return (
@@ -8,9 +10,8 @@ export default function LandingPage() {
       <Navbar />
       <Hero />
       <Features />
-      {/* Placeholder for upcoming sections */}
-      <div id="how-it-works" className="py-24" />
-      <div id="faq" className="py-24" />
+      <HowItWorks />
+      <FAQ />
     </main>
   );
 }
