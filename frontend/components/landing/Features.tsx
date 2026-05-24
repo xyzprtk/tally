@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Upload,
@@ -9,10 +10,19 @@ import {
   SearchCheck,
   MessageSquareCode,
 } from "lucide-react";
+import {
+  IsoUpload,
+  IsoStats,
+  IsoVisualizations,
+  IsoDataOps,
+  IsoEDA,
+  IsoLLMChat,
+} from "./isometric";
 
 const features = [
   {
     icon: Upload,
+    illustration: IsoUpload,
     title: "Upload Anything",
     description:
       "Drag and drop CSV or JSON files. No setup, no schema definitions. Tally parses it in-memory and you're ready to go.",
@@ -20,6 +30,7 @@ const features = [
   },
   {
     icon: BarChart3,
+    illustration: IsoStats,
     title: "Descriptive Stats",
     description:
       "Mean, median, std, quartiles — one click, zero code. Get a full statistical summary of any numeric column instantly.",
@@ -27,6 +38,7 @@ const features = [
   },
   {
     icon: LineChart,
+    illustration: IsoVisualizations,
     title: "Visualizations",
     description:
       "Scatter plots, histograms, correlation heatmaps. Generated instantly with Matplotlib and served as crisp PNGs.",
@@ -34,6 +46,7 @@ const features = [
   },
   {
     icon: Filter,
+    illustration: IsoDataOps,
     title: "Data Operations",
     description:
       "Filter, sort, and group-by with aggregation. All through the UI. No pandas syntax to memorize.",
@@ -41,6 +54,7 @@ const features = [
   },
   {
     icon: SearchCheck,
+    illustration: IsoEDA,
     title: "EDA Suite",
     description:
       "Dtype conversion, missing value analysis, outlier detection, distribution checks, and duplicate handling — all in one tab.",
@@ -48,6 +62,7 @@ const features = [
   },
   {
     icon: MessageSquareCode,
+    illustration: IsoLLMChat,
     title: "LLM Chat",
     description:
       "Ask questions in plain English. Tally writes the pandas code, runs it in a sandbox, and returns the results with plots.",
@@ -66,6 +81,8 @@ const cardVariants = {
 };
 
 export function Features() {
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+
   return (
     <section id="features" className="py-24 md:py-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -95,21 +112,45 @@ export function Features() {
         >
           {features.map((feature) => {
             const Icon = feature.icon;
+            const Illustration = feature.illustration;
+            const isLarge = feature.span.includes("col-span-3") || feature.span.includes("col-span-2");
+            const isHovered = hoveredCard === feature.title;
+
             return (
               <motion.div
                 key={feature.title}
                 variants={cardVariants}
-                className={`group relative rounded-2xl border border-border bg-card p-6 md:p-8 transition-all duration-300 hover:border-[#C05C46]/30 hover:-translate-y-0.5 hover:shadow-[0_12px_40px_-12px_rgba(192,92,70,0.12)] ${feature.span}`}
+                onHoverStart={() => setHoveredCard(feature.title)}
+                onHoverEnd={() => setHoveredCard(null)}
+                className={`group relative rounded-2xl border border-border bg-card p-6 md:p-8 transition-all duration-300 hover:border-[#C05C46]/30 hover:-translate-y-0.5 hover:shadow-[0_12px_40px_-12px_rgba(192,92,70,0.12)] overflow-hidden ${feature.span}`}
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#C05C46]/10 text-[#C05C46] mb-5">
-                  <Icon className="h-5 w-5" />
+                {/* Isometric illustration - top right */}
+                <motion.div
+                  className={`absolute top-3 right-3 md:top-4 md:right-4 pointer-events-none ${
+                    isLarge ? "w-24 h-24 md:w-28 md:h-28" : "w-20 h-20 md:w-24 md:h-24"
+                  }`}
+                  animate={
+                    isHovered
+                      ? { y: -6, opacity: 0.9, scale: 1.04 }
+                      : { y: 0, opacity: 0.55, scale: 1 }
+                  }
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  style={{ color: "#C05C46" }}
+                >
+                  <Illustration className="w-full h-full" />
+                </motion.div>
+
+                <div className="relative z-10">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#C05C46]/10 text-[#C05C46] mb-5">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                    {feature.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed max-w-[90%]">
+                    {feature.description}
+                  </p>
                 </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {feature.description}
-                </p>
               </motion.div>
             );
           })}
