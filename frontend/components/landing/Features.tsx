@@ -17,42 +17,42 @@ const features = [
     title: "Upload Anything",
     description:
       "Drag and drop CSV or JSON files. No setup, no schema definitions. Tally parses it in-memory and you're ready to go.",
-    span: "lg:col-span-4",
+    span: "lg:col-span-1 lg:row-span-1",
   },
   {
     illustration: IsoStats,
     title: "Descriptive Stats",
     description:
       "Mean, median, std, quartiles — one click, zero code. Get a full statistical summary of any numeric column instantly.",
-    span: "lg:col-span-2",
+    span: "lg:col-span-1 lg:row-span-2",
   },
   {
     illustration: IsoVisualizations,
-    title: "Visualizations",
+    title: "Visualisations",
     description:
       "Scatter plots, histograms, correlation heatmaps. Generated instantly with Matplotlib and served as crisp PNGs.",
-    span: "lg:col-span-1",
-  },
-  {
-    illustration: IsoDataOps,
-    title: "Data Operations",
-    description:
-      "Filter, sort, and group-by with aggregation. All through the UI. No pandas syntax to memorize.",
-    span: "lg:col-span-1",
+    span: "lg:col-span-1 lg:row-span-1",
   },
   {
     illustration: IsoEDA,
     title: "EDA Suite",
     description:
       "Dtype conversion, missing value analysis, outlier detection, distribution checks, and duplicate handling — all in one tab.",
-    span: "lg:col-span-1",
+    span: "lg:col-span-1 lg:row-span-1",
+  },
+  {
+    illustration: IsoDataOps,
+    title: "Data Operations",
+    description:
+      "Filter, sort, and group-by with aggregation. All through the UI. No pandas syntax to memorize.",
+    span: "lg:col-span-1 lg:row-span-2",
   },
   {
     illustration: IsoLLMChat,
     title: "LLM Chat",
     description:
       "Ask questions in plain English. Tally writes the pandas code, runs it in a sandbox, and returns the results with plots.",
-    span: "lg:col-span-3",
+    span: "lg:col-span-2 lg:row-span-1",
   },
 ];
 
@@ -67,23 +67,19 @@ const cardVariants = {
 };
 
 function getSvgSize(span: string) {
-  if (span.includes("col-span-4")) return "w-36 h-36 md:w-40 md:h-40";
-  if (span.includes("col-span-3")) return "w-32 h-32 md:w-36 md:h-36";
   if (span.includes("col-span-2")) return "w-28 h-28 md:w-32 md:h-32";
+  if (span.includes("row-span-2")) return "w-24 h-24 md:w-28 md:h-28";
   return "w-20 h-20 md:w-24 md:h-24";
 }
 
 function getTextMaxWidth(span: string) {
-  if (span.includes("col-span-4")) return "max-w-[75%] md:max-w-[70%]";
-  if (span.includes("col-span-3")) return "max-w-[65%] md:max-w-[60%]";
-  if (span.includes("col-span-2")) return "max-w-[60%] md:max-w-[55%]";
+  if (span.includes("col-span-2")) return "max-w-[75%] md:max-w-[70%]";
   return "max-w-[55%] md:max-w-[50%]";
 }
 
 function getTitlePadding(span: string) {
-  if (span.includes("col-span-4")) return "pr-28 md:pr-32";
-  if (span.includes("col-span-3")) return "pr-24 md:pr-28";
-  if (span.includes("col-span-2")) return "pr-20 md:pr-24";
+  if (span.includes("col-span-2")) return "pr-24 md:pr-28";
+  if (span.includes("row-span-2")) return "pr-16 md:pr-20";
   return "pr-14 md:pr-16";
 }
 
@@ -115,7 +111,7 @@ export function Features() {
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
           transition={{ staggerChildren: 0.08 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:auto-rows-[minmax(170px,auto)] gap-4"
         >
           {features.map((feature) => {
             const Illustration = feature.illustration;
@@ -132,9 +128,9 @@ export function Features() {
                 onHoverEnd={() => setHoveredCard(null)}
                 className={`group relative rounded-2xl border border-border bg-card p-6 md:p-8 transition-all duration-300 hover:border-[#C05C46]/30 hover:-translate-y-0.5 hover:shadow-[0_12px_40px_-12px_rgba(192,92,70,0.12)] overflow-hidden ${feature.span}`}
               >
-                {/* Isometric illustration - top right, scaled to card width */}
+                {/* Isometric illustration - top right, sized per card type */}
                 <motion.div
-                  className={`absolute top-2 right-2 md:top-3 md:right-3 pointer-events-none ${svgSize}`}
+                  className={`absolute top-3 right-3 md:top-4 md:right-4 pointer-events-none ${svgSize}`}
                   animate={
                     isHovered
                       ? { y: -8, opacity: 1, scale: 1.05 }
