@@ -68,7 +68,7 @@ const cardVariants = {
 
 function getSvgSize(span: string) {
   if (span.includes("col-span-2")) return "w-28 h-28 md:w-32 md:h-32";
-  if (span.includes("row-span-2")) return "w-24 h-24 md:w-28 md:h-28";
+  if (span.includes("row-span-2")) return "w-28 h-28 md:w-32 md:h-32";
   return "w-20 h-20 md:w-24 md:h-24";
 }
 
@@ -111,7 +111,7 @@ export function Features() {
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
           transition={{ staggerChildren: 0.08 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:auto-rows-[minmax(130px,auto)] gap-4"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:auto-rows-[minmax(115px,auto)] gap-4"
         >
           {features.map((feature) => {
             const Illustration = feature.illustration;
