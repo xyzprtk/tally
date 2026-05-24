@@ -219,19 +219,20 @@ export function DataVisual() {
       const sigmaStr = currentStats.sigma.toFixed(2);
       const nStr = Math.round(currentStats.n).toLocaleString();
 
-      ctx.font = '13px ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace';
-      ctx.fillStyle = `rgba(${ACCENT}, 0.7)`;
       ctx.textAlign = "left";
       ctx.textBaseline = "bottom";
 
-      const statsText = `μ = ${muStr}  |  σ = ${sigmaStr}  |  n = ${nStr}`;
-      ctx.fillText(statsText, 4, h - 8);
-
-      // Tiny label above stats
-      ctx.font = '10px ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace';
-      ctx.fillStyle = `rgba(${ACCENT}, 0.4)`;
+      // Distribution name label
+      ctx.font = '11px "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace';
+      ctx.fillStyle = `rgba(${ACCENT}, 0.55)`;
       const distName = distributions[targetIndexRef.current].name.replace("-", " ");
-      ctx.fillText(distName, 4, h - 26);
+      ctx.fillText(distName, 8, h - 36);
+
+      // Stats line
+      ctx.font = '14px "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace';
+      ctx.fillStyle = `rgba(${ACCENT}, 0.85)`;
+      const statsText = `μ = ${muStr}  |  σ = ${sigmaStr}  |  n = ${nStr}`;
+      ctx.fillText(statsText, 8, h - 16);
     };
 
     draw();
