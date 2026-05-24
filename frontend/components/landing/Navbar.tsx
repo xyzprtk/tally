@@ -55,7 +55,7 @@ export function Navbar() {
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted"
           >
-            <GithubIcon className="h-5 w-5" />
+            <GithubIcon className="h-4 w-4 shrink-0" />
             <span className="hidden sm:inline">GitHub</span>
           </a>
           <Link
