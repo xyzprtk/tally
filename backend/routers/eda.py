@@ -116,8 +116,14 @@ async def drop_duplicates(params: dict):
 
 
 # ---------------------------------------------------------------------------
-# Download
+# Download / Restore
 # ---------------------------------------------------------------------------
+
+@router.post("/api/eda/restore")
+async def restore_dataset():
+    df = dataset.restore_original()
+    return eda.get_available_conversions(df)
+
 
 @router.get("/api/dataset/download")
 async def download_dataset():

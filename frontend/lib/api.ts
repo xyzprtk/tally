@@ -138,3 +138,10 @@ export async function dropDuplicates(columns?: string[]): Promise<{ message: str
   });
   return handleResponse(res);
 }
+
+export async function restoreDataset(): Promise<DtypeOptions> {
+  const res = await fetch(`${API_BASE}/api/eda/restore`, {
+    method: "POST",
+  });
+  return handleResponse<DtypeOptions>(res);
+}
