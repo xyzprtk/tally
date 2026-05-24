@@ -17,7 +17,7 @@ const features = [
     title: "Upload Anything",
     description:
       "Drag and drop CSV or JSON files. No setup, no schema definitions. Tally parses it in-memory and you're ready to go.",
-    span: "lg:col-span-3",
+    span: "lg:col-span-4",
   },
   {
     illustration: IsoStats,
@@ -66,6 +66,27 @@ const cardVariants = {
   visible: { opacity: 1, y: 0 },
 };
 
+function getSvgSize(span: string) {
+  if (span.includes("col-span-4")) return "w-36 h-36 md:w-40 md:h-40";
+  if (span.includes("col-span-3")) return "w-32 h-32 md:w-36 md:h-36";
+  if (span.includes("col-span-2")) return "w-28 h-28 md:w-32 md:h-32";
+  return "w-20 h-20 md:w-24 md:h-24";
+}
+
+function getTextMaxWidth(span: string) {
+  if (span.includes("col-span-4")) return "max-w-[75%] md:max-w-[70%]";
+  if (span.includes("col-span-3")) return "max-w-[65%] md:max-w-[60%]";
+  if (span.includes("col-span-2")) return "max-w-[60%] md:max-w-[55%]";
+  return "max-w-[55%] md:max-w-[50%]";
+}
+
+function getTitlePadding(span: string) {
+  if (span.includes("col-span-4")) return "pr-28 md:pr-32";
+  if (span.includes("col-span-3")) return "pr-24 md:pr-28";
+  if (span.includes("col-span-2")) return "pr-20 md:pr-24";
+  return "pr-14 md:pr-16";
+}
+
 export function Features() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
@@ -94,13 +115,14 @@ export function Features() {
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
           transition={{ staggerChildren: 0.08 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
         >
           {features.map((feature) => {
             const Illustration = feature.illustration;
-            const isLarge = feature.span.includes("col-span-3") || feature.span.includes("col-span-2");
-            const isSmall = feature.span === "lg:col-span-1";
             const isHovered = hoveredCard === feature.title;
+            const svgSize = getSvgSize(feature.span);
+            const textMaxWidth = getTextMaxWidth(feature.span);
+            const titlePadding = getTitlePadding(feature.span);
 
             return (
               <motion.div
@@ -110,15 +132,9 @@ export function Features() {
                 onHoverEnd={() => setHoveredCard(null)}
                 className={`group relative rounded-2xl border border-border bg-card p-6 md:p-8 transition-all duration-300 hover:border-[#C05C46]/30 hover:-translate-y-0.5 hover:shadow-[0_12px_40px_-12px_rgba(192,92,70,0.12)] overflow-hidden ${feature.span}`}
               >
-                {/* Isometric illustration - top right, scaled up */}
+                {/* Isometric illustration - top right, scaled to card width */}
                 <motion.div
-                  className={`absolute top-2 right-2 md:top-3 md:right-3 pointer-events-none ${
-                    isLarge
-                      ? "w-32 h-32 md:w-36 md:h-36"
-                      : isSmall
-                        ? "w-24 h-24 md:w-28 md:h-28"
-                        : "w-28 h-28 md:w-32 md:h-32"
-                  }`}
+                  className={`absolute top-2 right-2 md:top-3 md:right-3 pointer-events-none ${svgSize}`}
                   animate={
                     isHovered
                       ? { y: -8, opacity: 1, scale: 1.05 }
@@ -132,12 +148,10 @@ export function Features() {
 
                 {/* Text content - left aligned with padding to avoid SVG collision */}
                 <div className="relative z-10">
-                  <h3 className="text-lg font-semibold text-foreground mb-2 pr-20 md:pr-24">
+                  <h3 className={`text-lg font-semibold text-foreground mb-2 ${titlePadding}`}>
                     {feature.title}
                   </h3>
-                  <p className={`text-sm text-muted-foreground leading-relaxed ${
-                    isLarge ? "max-w-[65%] md:max-w-[60%]" : "max-w-[60%] md:max-w-[55%]"
-                  }`}>
+                  <p className={`text-sm text-muted-foreground leading-relaxed ${textMaxWidth}`}>
                     {feature.description}
                   </p>
                 </div>
