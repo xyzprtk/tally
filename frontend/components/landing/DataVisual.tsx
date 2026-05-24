@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 interface Distribution {
   name: string;
   heights: number[];
+  stats: { mu: number; sigma: number; n: number };
 }
 
 const BAR_COUNT = 24;
@@ -18,6 +19,7 @@ const distributions: Distribution[] = [
       1.0, 0.9, 0.75, 0.55, 0.35, 0.2, 0.12, 0.08,
       0.05, 0.03, 0.02, 0.01, 0.01, 0.0, 0.0, 0.0,
     ],
+    stats: { mu: 0.50, sigma: 0.20, n: 2847 },
   },
   {
     name: "skewed-right",
@@ -26,6 +28,7 @@ const distributions: Distribution[] = [
       0.13, 0.09, 0.06, 0.04, 0.03, 0.02, 0.015, 0.01,
       0.008, 0.006, 0.005, 0.004, 0.003, 0.002, 0.001, 0.0,
     ],
+    stats: { mu: 0.32, sigma: 0.24, n: 1532 },
   },
   {
     name: "bimodal",
@@ -34,10 +37,12 @@ const distributions: Distribution[] = [
       0.35, 0.15, 0.06, 0.03, 0.015, 0.03, 0.06, 0.15,
       0.35, 0.6, 0.75, 0.55, 0.3, 0.15, 0.08, 0.04,
     ],
+    stats: { mu: 0.50, sigma: 0.28, n: 3104 },
   },
   {
     name: "uniform",
     heights: Array(BAR_COUNT).fill(0.55),
+    stats: { mu: 0.50, sigma: 0.30, n: 1918 },
   },
   {
     name: "skewed-left",
@@ -46,6 +51,7 @@ const distributions: Distribution[] = [
       0.01, 0.015, 0.02, 0.03, 0.04, 0.06, 0.09, 0.13,
       0.18, 0.24, 0.32, 0.42, 0.55, 0.7, 0.85, 1.0,
     ],
+    stats: { mu: 0.68, sigma: 0.24, n: 2634 },
   },
 ];
 
@@ -54,9 +60,9 @@ export function DataVisual() {
   const animRef = useRef<number>(0);
   const isVisibleRef = useRef(true);
   const currentHeightsRef = useRef<number[]>([...distributions[0].heights]);
+  const currentStatsRef = useRef({ mu: distributions[0].stats.mu, sigma: distributions[0].stats.sigma, n: distributions[0].stats.n });
   const targetIndexRef = useRef(0);
   const holdTimerRef = useRef(0);
-  const morphProgressRef = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -100,30 +106,42 @@ export function DataVisual() {
       ctx.clearRect(0, 0, w, h);
 
       // --- Morph logic ---
-      const target = distributions[targetIndexRef.current].heights;
+      const targetDist = distributions[targetIndexRef.current];
+      const targetHeights = targetDist.heights;
+      const targetStats = targetDist.stats;
       const current = currentHeightsRef.current;
+      const currentStats = currentStatsRef.current;
 
-      // Smooth lerp factor
       const lerpFactor = 0.04;
 
-      // If close to target, increment hold timer
       const maxDiff = Math.max(
-        ...current.map((c, i) => Math.abs(c - target[i]))
+        ...current.map((c, i) => Math.abs(c - targetHeights[i]))
       );
 
       if (maxDiff < 0.015) {
         holdTimerRef.current += 1;
         if (holdTimerRef.current > 90) {
-          // ~1.5s hold at 60fps before morphing
           targetIndexRef.current =
             (targetIndexRef.current + 1) % distributions.length;
           holdTimerRef.current = 0;
         }
       }
 
-      // Lerp current heights toward target
+      // Lerp bar heights
       for (let i = 0; i < BAR_COUNT; i++) {
-        current[i] += (target[i] - current[i]) * lerpFactor;
+        current[i] += (targetHeights[i] - current[i]) * lerpFactor;
+      }
+
+      // Lerp stats
+      currentStats.mu += (targetStats.mu - currentStats.mu) * lerpFactor;
+      currentStats.sigma += (targetStats.sigma - currentStats.sigma) * lerpFactor;
+      currentStats.n += (targetStats.n - currentStats.n) * lerpFactor * 0.5; // slower for count
+
+      // During hold phase, gently drift stats for "live" feel
+      if (maxDiff < 0.015) {
+        const driftPhase = Math.sin(frameCount * 0.03) * 0.008;
+        currentStats.mu = Math.max(0, Math.min(1, currentStats.mu + driftPhase));
+        currentStats.sigma = Math.max(0.05, Math.min(0.5, currentStats.sigma + driftPhase * 0.5));
       }
 
       // --- Draw grid lines (subtle) ---
@@ -140,18 +158,15 @@ export function DataVisual() {
       // --- Draw bars ---
       const gap = 3;
       const barWidth = (w - gap * (BAR_COUNT - 1)) / BAR_COUNT;
-      const chartHeight = h * 0.85;
-      const baselineY = h * 0.92;
+      const chartHeight = h * 0.7;
+      const baselineY = h * 0.82;
 
       for (let i = 0; i < BAR_COUNT; i++) {
         const barH = current[i] * chartHeight;
         const x = i * (barWidth + gap);
         const y = baselineY - barH;
 
-        // Bar opacity varies with height (taller = more visible)
         const opacity = 0.12 + current[i] * 0.45;
-
-        // Rounded bar top
         const radius = Math.min(barWidth / 2, 3);
 
         ctx.beginPath();
@@ -167,7 +182,7 @@ export function DataVisual() {
         ctx.fillStyle = `rgba(${ACCENT}, ${opacity})`;
         ctx.fill();
 
-        // Top highlight line on taller bars
+        // Top highlight on taller bars
         if (current[i] > 0.4) {
           ctx.beginPath();
           ctx.moveTo(x + radius, y);
@@ -198,6 +213,25 @@ export function DataVisual() {
       ctx.strokeStyle = `rgba(${ACCENT}, 0.12)`;
       ctx.lineWidth = 1;
       ctx.stroke();
+
+      // --- Stats readout (bottom-left) ---
+      const muStr = currentStats.mu.toFixed(2);
+      const sigmaStr = currentStats.sigma.toFixed(2);
+      const nStr = Math.round(currentStats.n).toLocaleString();
+
+      ctx.font = '13px ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace';
+      ctx.fillStyle = `rgba(${ACCENT}, 0.7)`;
+      ctx.textAlign = "left";
+      ctx.textBaseline = "bottom";
+
+      const statsText = `μ = ${muStr}  |  σ = ${sigmaStr}  |  n = ${nStr}`;
+      ctx.fillText(statsText, 4, h - 8);
+
+      // Tiny label above stats
+      ctx.font = '10px ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace';
+      ctx.fillStyle = `rgba(${ACCENT}, 0.4)`;
+      const distName = distributions[targetIndexRef.current].name.replace("-", " ");
+      ctx.fillText(distName, 4, h - 26);
     };
 
     draw();
@@ -215,7 +249,7 @@ export function DataVisual() {
     <canvas
       ref={canvasRef}
       className="w-full h-full min-h-[300px] md:min-h-[400px]"
-      style={{ opacity: 0.9 }}
+      style={{ opacity: 0.95 }}
     />
   );
 }

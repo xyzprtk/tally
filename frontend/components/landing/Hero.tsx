@@ -86,7 +86,7 @@ export function Hero() {
             transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
             className="relative hidden lg:block"
           >
-            <div className="relative rounded-2xl border border-border bg-card/30 overflow-hidden">
+            <div className="relative overflow-hidden">
               <DataVisual />
             </div>
             {/* Subtle glow behind */}
