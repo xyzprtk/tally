@@ -67,8 +67,8 @@ const cardVariants = {
 };
 
 function getSvgSize(span: string) {
-  if (span.includes("col-span-2")) return "w-28 h-28 md:w-32 md:h-32";
-  return "w-20 h-20 md:w-24 md:h-24";
+  if (span.includes("col-span-2")) return "w-32 h-32 md:w-40 md:h-40";
+  return "w-28 h-28 md:w-32 md:h-32";
 }
 
 function getTextMaxWidth(span: string) {
@@ -77,8 +77,8 @@ function getTextMaxWidth(span: string) {
 }
 
 function getTitlePadding(span: string) {
-  if (span.includes("col-span-2")) return "pr-24 md:pr-28";
-  return "pr-14 md:pr-16";
+  if (span.includes("col-span-2")) return "pr-28 md:pr-36";
+  return "pr-20 md:pr-24";
 }
 
 export function Features() {
