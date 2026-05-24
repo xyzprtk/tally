@@ -20,17 +20,24 @@ const features = [
     span: "lg:col-span-1 lg:row-span-1",
   },
   {
-    illustration: IsoStats,
-    title: "Descriptive Stats",
-    description:
-      "Mean, median, std, quartiles — one click, zero code. Get a full statistical summary of any numeric column instantly.",
-    span: "lg:col-span-1 lg:row-span-2",
-  },
-  {
     illustration: IsoVisualizations,
     title: "Visualisations",
     description:
       "Scatter plots, histograms, correlation heatmaps. Generated instantly with Matplotlib and served as crisp PNGs.",
+    span: "lg:col-span-1 lg:row-span-1",
+  },
+  {
+    illustration: IsoDataOps,
+    title: "Data Operations",
+    description:
+      "Filter, sort, and group-by with aggregation. All through the UI. No pandas syntax to memorize.",
+    span: "lg:col-span-1 lg:row-span-1",
+  },
+  {
+    illustration: IsoStats,
+    title: "Descriptive Stats",
+    description:
+      "Mean, median, std, quartiles — one click, zero code. Get a full statistical summary of any numeric column instantly.",
     span: "lg:col-span-1 lg:row-span-1",
   },
   {
@@ -41,18 +48,11 @@ const features = [
     span: "lg:col-span-1 lg:row-span-1",
   },
   {
-    illustration: IsoDataOps,
-    title: "Data Operations",
-    description:
-      "Filter, sort, and group-by with aggregation. All through the UI. No pandas syntax to memorize.",
-    span: "lg:col-span-1 lg:row-span-2",
-  },
-  {
     illustration: IsoLLMChat,
     title: "LLM Chat",
     description:
       "Ask questions in plain English. Tally writes the pandas code, runs it in a sandbox, and returns the results with plots.",
-    span: "lg:col-span-2 lg:row-span-1",
+    span: "lg:col-span-3 lg:row-span-1",
   },
 ];
 
@@ -67,19 +67,17 @@ const cardVariants = {
 };
 
 function getSvgSize(span: string) {
-  if (span.includes("col-span-2")) return "w-28 h-28 md:w-32 md:h-32";
-  if (span.includes("row-span-2")) return "w-28 h-28 md:w-32 md:h-32";
+  if (span.includes("col-span-3")) return "w-28 h-28 md:w-32 md:h-32";
   return "w-20 h-20 md:w-24 md:h-24";
 }
 
 function getTextMaxWidth(span: string) {
-  if (span.includes("col-span-2")) return "max-w-[75%] md:max-w-[70%]";
+  if (span.includes("col-span-3")) return "max-w-[75%] md:max-w-[70%]";
   return "max-w-[55%] md:max-w-[50%]";
 }
 
 function getTitlePadding(span: string) {
-  if (span.includes("col-span-2")) return "pr-24 md:pr-28";
-  if (span.includes("row-span-2")) return "pr-16 md:pr-20";
+  if (span.includes("col-span-3")) return "pr-24 md:pr-28";
   return "pr-14 md:pr-16";
 }
 
@@ -128,7 +126,7 @@ export function Features() {
                 onHoverEnd={() => setHoveredCard(null)}
                 className={`group relative rounded-2xl border border-border bg-card p-6 md:p-8 transition-all duration-300 hover:border-[#C05C46]/30 hover:-translate-y-0.5 hover:shadow-[0_12px_40px_-12px_rgba(192,92,70,0.12)] overflow-hidden ${feature.span}`}
               >
-                {/* Isometric illustration - top right, sized per card type */}
+                {/* Isometric illustration - top right */}
                 <motion.div
                   className={`absolute top-3 right-3 md:top-4 md:right-4 pointer-events-none ${svgSize}`}
                   animate={
@@ -142,7 +140,7 @@ export function Features() {
                   <Illustration className="w-full h-full" />
                 </motion.div>
 
-                {/* Text content - left aligned with padding to avoid SVG collision */}
+                {/* Text content */}
                 <div className="relative z-10">
                   <h3 className={`text-lg font-semibold text-foreground mb-2 ${titlePadding}`}>
                     {feature.title}
