@@ -2,26 +2,17 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, Github } from "lucide-react";
+import { ArrowRight, ExternalLink } from "lucide-react";
 import { DataVisual } from "./DataVisual";
 
 const containerVariants = {
   hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
-    },
-  },
+  visible: {},
 };
 
 const itemVariants = {
   hidden: { opacity: 0, y: 24 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
-  },
+  visible: { opacity: 1, y: 0 },
 };
 
 export function Hero() {
@@ -37,6 +28,7 @@ export function Hero() {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
+            transition={{ staggerChildren: 0.1, delayChildren: 0.2 }}
             className="max-w-xl"
           >
             <motion.h1
@@ -73,7 +65,7 @@ export function Hero() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-6 py-3 text-base font-medium rounded-full border border-border bg-background hover:bg-muted transition-colors active:scale-[0.98]"
               >
-                <Github className="h-4 w-4" />
+                <ExternalLink className="h-4 w-4" />
                 View on GitHub
               </a>
             </motion.div>

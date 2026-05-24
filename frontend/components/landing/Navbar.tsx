@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Github } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import TallyLogo from "./TallyLogo";
 
@@ -55,7 +55,7 @@ export function Navbar() {
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted"
           >
-            <Github className="h-4 w-4" />
+            <ExternalLink className="h-4 w-4" />
             <span className="hidden sm:inline">GitHub</span>
           </a>
           <Link
