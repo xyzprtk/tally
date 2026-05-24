@@ -52,7 +52,7 @@ const features = [
     title: "LLM Chat",
     description:
       "Ask questions in plain English. Tally writes the pandas code, runs it in a sandbox, and returns the results with plots.",
-    span: "lg:col-span-3 lg:row-span-1",
+    span: "lg:col-span-2 lg:row-span-1",
   },
 ];
 
@@ -67,17 +67,17 @@ const cardVariants = {
 };
 
 function getSvgSize(span: string) {
-  if (span.includes("col-span-3")) return "w-28 h-28 md:w-32 md:h-32";
+  if (span.includes("col-span-2")) return "w-28 h-28 md:w-32 md:h-32";
   return "w-20 h-20 md:w-24 md:h-24";
 }
 
 function getTextMaxWidth(span: string) {
-  if (span.includes("col-span-3")) return "max-w-[75%] md:max-w-[70%]";
+  if (span.includes("col-span-2")) return "max-w-[75%] md:max-w-[70%]";
   return "max-w-[55%] md:max-w-[50%]";
 }
 
 function getTitlePadding(span: string) {
-  if (span.includes("col-span-3")) return "pr-24 md:pr-28";
+  if (span.includes("col-span-2")) return "pr-24 md:pr-28";
   return "pr-14 md:pr-16";
 }
 
