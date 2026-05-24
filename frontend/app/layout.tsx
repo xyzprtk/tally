@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AI Data Analyst",
-  description: "Upload datasets, run analytics, and chat with an LLM-powered data analyst",
+  title: "Tally — Skip the boilerplate",
+  description: "Tally handles your descriptive stats, plots, and EDA — so you can focus on the model.",
 };
 
 export default function RootLayout({
@@ -24,9 +25,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}>
       <body className="h-full flex flex-col">
-        <TooltipProvider>{children}</TooltipProvider>
+        <ThemeProvider>
+          <TooltipProvider>{children}</TooltipProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
