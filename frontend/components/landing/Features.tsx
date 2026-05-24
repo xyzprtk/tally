@@ -111,7 +111,7 @@ export function Features() {
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
           transition={{ staggerChildren: 0.08 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:auto-rows-[minmax(170px,auto)] gap-4"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:auto-rows-[minmax(130px,auto)] gap-4"
         >
           {features.map((feature) => {
             const Illustration = feature.illustration;
