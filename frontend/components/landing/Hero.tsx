@@ -2,8 +2,9 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, ExternalLink } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { DataVisual } from "./DataVisual";
+import { GithubIcon } from "./GithubIcon";
 
 const containerVariants = {
   hidden: {},
@@ -60,12 +61,12 @@ export function Hero() {
               </Link>
 
               <a
-                href="https://github.com"
+                href="https://github.com/xyzprtk/tally"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-6 py-3 text-base font-medium rounded-full border border-border bg-background hover:bg-muted transition-colors active:scale-[0.98]"
               >
-                <ExternalLink className="h-4 w-4" />
+                <GithubIcon className="h-5 w-5" />
                 View on GitHub
               </a>
             </motion.div>

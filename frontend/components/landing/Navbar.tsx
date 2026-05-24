@@ -2,9 +2,9 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ExternalLink } from "lucide-react";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import TallyLogo from "./TallyLogo";
+import { GithubIcon } from "./GithubIcon";
 
 const navLinks = [
   { label: "Features", href: "#features" },
@@ -50,12 +50,12 @@ export function Navbar() {
           <ThemeToggle />
           <div className="h-5 w-px bg-border" />
           <a
-            href="https://github.com"
+            href="https://github.com/xyzprtk/tally"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted"
           >
-            <ExternalLink className="h-4 w-4" />
+            <GithubIcon className="h-5 w-5" />
             <span className="hidden sm:inline">GitHub</span>
           </a>
           <Link

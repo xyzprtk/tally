@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { ExternalLink } from "lucide-react";
 import TallyLogo from "./TallyLogo";
+import { GithubIcon } from "./GithubIcon";
 
 export function Footer() {
   return (
@@ -24,12 +24,12 @@ export function Footer() {
           {/* Right: Links */}
           <div className="flex items-center gap-6">
             <a
-              href="https://github.com"
+              href="https://github.com/xyzprtk/tally"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
-              <ExternalLink className="h-4 w-4" />
+              <GithubIcon className="h-5 w-5" />
               GitHub
             </a>
             <Link
