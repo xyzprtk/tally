@@ -81,6 +81,11 @@ function getTitlePadding(span: string) {
   return "pr-20 md:pr-24";
 }
 
+function getSvgPosition(span: string) {
+  if (span.includes("col-span-2")) return "top-1 right-6 md:top-2 md:right-10";
+  return "top-3 right-3 md:top-4 md:right-4";
+}
+
 export function Features() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
@@ -115,6 +120,7 @@ export function Features() {
             const Illustration = feature.illustration;
             const isHovered = hoveredCard === feature.title;
             const svgSize = getSvgSize(feature.span);
+            const svgPosition = getSvgPosition(feature.span);
             const textMaxWidth = getTextMaxWidth(feature.span);
             const titlePadding = getTitlePadding(feature.span);
 
@@ -128,7 +134,7 @@ export function Features() {
               >
                 {/* Isometric illustration - top right */}
                 <motion.div
-                  className={`absolute top-3 right-3 md:top-4 md:right-4 pointer-events-none ${svgSize}`}
+                  className={`absolute pointer-events-none ${svgPosition} ${svgSize}`}
                   animate={
                     isHovered
                       ? { y: -8, opacity: 1, scale: 1.05 }
