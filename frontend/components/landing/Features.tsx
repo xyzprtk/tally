@@ -82,7 +82,7 @@ function getTitlePadding(span: string) {
 }
 
 function getSvgPosition(span: string) {
-  if (span.includes("col-span-2")) return "top-0 right-6 md:top-0 md:right-10";
+  if (span.includes("col-span-2")) return "top-[3px] right-6 md:top-[4px] md:right-10";
   return "top-3 right-3 md:top-4 md:right-4";
 }
 
