@@ -3,14 +3,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import {
-  Upload,
-  BarChart3,
-  LineChart,
-  Filter,
-  SearchCheck,
-  MessageSquareCode,
-} from "lucide-react";
-import {
   IsoUpload,
   IsoStats,
   IsoVisualizations,
@@ -21,7 +13,6 @@ import {
 
 const features = [
   {
-    icon: Upload,
     illustration: IsoUpload,
     title: "Upload Anything",
     description:
@@ -29,7 +20,6 @@ const features = [
     span: "lg:col-span-3",
   },
   {
-    icon: BarChart3,
     illustration: IsoStats,
     title: "Descriptive Stats",
     description:
@@ -37,7 +27,6 @@ const features = [
     span: "lg:col-span-2",
   },
   {
-    icon: LineChart,
     illustration: IsoVisualizations,
     title: "Visualizations",
     description:
@@ -45,7 +34,6 @@ const features = [
     span: "lg:col-span-1",
   },
   {
-    icon: Filter,
     illustration: IsoDataOps,
     title: "Data Operations",
     description:
@@ -53,7 +41,6 @@ const features = [
     span: "lg:col-span-1",
   },
   {
-    icon: SearchCheck,
     illustration: IsoEDA,
     title: "EDA Suite",
     description:
@@ -61,7 +48,6 @@ const features = [
     span: "lg:col-span-1",
   },
   {
-    icon: MessageSquareCode,
     illustration: IsoLLMChat,
     title: "LLM Chat",
     description:
@@ -111,9 +97,9 @@ export function Features() {
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
         >
           {features.map((feature) => {
-            const Icon = feature.icon;
             const Illustration = feature.illustration;
             const isLarge = feature.span.includes("col-span-3") || feature.span.includes("col-span-2");
+            const isSmall = feature.span === "lg:col-span-1";
             const isHovered = hoveredCard === feature.title;
 
             return (
@@ -124,15 +110,19 @@ export function Features() {
                 onHoverEnd={() => setHoveredCard(null)}
                 className={`group relative rounded-2xl border border-border bg-card p-6 md:p-8 transition-all duration-300 hover:border-[#C05C46]/30 hover:-translate-y-0.5 hover:shadow-[0_12px_40px_-12px_rgba(192,92,70,0.12)] overflow-hidden ${feature.span}`}
               >
-                {/* Isometric illustration - top right */}
+                {/* Isometric illustration - top right, scaled up */}
                 <motion.div
-                  className={`absolute top-3 right-3 md:top-4 md:right-4 pointer-events-none ${
-                    isLarge ? "w-24 h-24 md:w-28 md:h-28" : "w-20 h-20 md:w-24 md:h-24"
+                  className={`absolute top-2 right-2 md:top-3 md:right-3 pointer-events-none ${
+                    isLarge
+                      ? "w-32 h-32 md:w-36 md:h-36"
+                      : isSmall
+                        ? "w-24 h-24 md:w-28 md:h-28"
+                        : "w-28 h-28 md:w-32 md:h-32"
                   }`}
                   animate={
                     isHovered
-                      ? { y: -6, opacity: 0.9, scale: 1.04 }
-                      : { y: 0, opacity: 0.55, scale: 1 }
+                      ? { y: -8, opacity: 1, scale: 1.05 }
+                      : { y: 0, opacity: 0.7, scale: 1 }
                   }
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   style={{ color: "#C05C46" }}
@@ -140,14 +130,14 @@ export function Features() {
                   <Illustration className="w-full h-full" />
                 </motion.div>
 
+                {/* Text content - left aligned with padding to avoid SVG collision */}
                 <div className="relative z-10">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#C05C46]/10 text-[#C05C46] mb-5">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                  <h3 className="text-lg font-semibold text-foreground mb-2 pr-20 md:pr-24">
                     {feature.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed max-w-[90%]">
+                  <p className={`text-sm text-muted-foreground leading-relaxed ${
+                    isLarge ? "max-w-[65%] md:max-w-[60%]" : "max-w-[60%] md:max-w-[55%]"
+                  }`}>
                     {feature.description}
                   </p>
                 </div>
