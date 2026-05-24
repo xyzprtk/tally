@@ -105,6 +105,10 @@ export function DataVisual() {
 
       ctx.clearRect(0, 0, w, h);
 
+      // --- Layout constants ---
+      const chartHeight = h * 0.60;
+      const baselineY = h * 0.68;
+
       // --- Morph logic ---
       const targetDist = distributions[targetIndexRef.current];
       const targetHeights = targetDist.heights;
@@ -144,11 +148,13 @@ export function DataVisual() {
         currentStats.sigma = Math.max(0.05, Math.min(0.5, currentStats.sigma + driftPhase * 0.5));
       }
 
-      // --- Draw grid lines (subtle) ---
+      // --- Draw grid lines (within chart area only) ---
+      const chartTop = baselineY - chartHeight;
       ctx.strokeStyle = `rgba(${ACCENT}, 0.06)`;
       ctx.lineWidth = 1;
       for (let i = 1; i < 5; i++) {
-        const y = h - (h * i) / 5;
+        const y = baselineY - (chartHeight * i) / 5;
+        if (y < chartTop) continue;
         ctx.beginPath();
         ctx.moveTo(0, y);
         ctx.lineTo(w, y);
@@ -158,8 +164,6 @@ export function DataVisual() {
       // --- Draw bars ---
       const gap = 3;
       const barWidth = (w - gap * (BAR_COUNT - 1)) / BAR_COUNT;
-      const chartHeight = h * 0.7;
-      const baselineY = h * 0.82;
 
       for (let i = 0; i < BAR_COUNT; i++) {
         const barH = current[i] * chartHeight;
@@ -214,25 +218,25 @@ export function DataVisual() {
       ctx.lineWidth = 1;
       ctx.stroke();
 
-      // --- Stats readout (bottom-left) ---
+      // --- Stats readout (bottom area, below chart) ---
       const muStr = currentStats.mu.toFixed(2);
       const sigmaStr = currentStats.sigma.toFixed(2);
-      const nStr = Math.round(currentStats.n).toLocaleString();
+      const nStr = Math.round(currentStats.n).toLocaleString("en-US");
 
       ctx.textAlign = "left";
-      ctx.textBaseline = "bottom";
+      ctx.textBaseline = "alphabetic";
 
       // Distribution name label
-      ctx.font = '11px "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace';
+      ctx.font = '12px monospace';
       ctx.fillStyle = `rgba(${ACCENT}, 0.55)`;
       const distName = distributions[targetIndexRef.current].name.replace("-", " ");
-      ctx.fillText(distName, 8, h - 36);
+      ctx.fillText(distName, 8, h * 0.82);
 
       // Stats line
-      ctx.font = '14px "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace';
-      ctx.fillStyle = `rgba(${ACCENT}, 0.85)`;
+      ctx.font = '14px monospace';
+      ctx.fillStyle = `rgba(${ACCENT}, 0.9)`;
       const statsText = `μ = ${muStr}  |  σ = ${sigmaStr}  |  n = ${nStr}`;
-      ctx.fillText(statsText, 8, h - 16);
+      ctx.fillText(statsText, 8, h * 0.92);
     };
 
     draw();
