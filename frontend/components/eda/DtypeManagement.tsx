@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useEda } from "@/hooks/useEda";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Download } from "lucide-react";
 import { getDtypeOptions, convertDtype, downloadDataset } from "@/lib/api";
@@ -12,7 +11,6 @@ import type { DtypeColumn } from "@/lib/types";
 export function DtypeManagement() {
   const { isLoading, error, run } = useEda();
   const [columns, setColumns] = useState<DtypeColumn[]>([]);
-  const [changes, setChanges] = useState<Record<string, string>>({});
 
   const loadOptions = useCallback(async () => {
     const data = await getDtypeOptions();
@@ -21,13 +19,10 @@ export function DtypeManagement() {
 
   useEffect(() => { loadOptions(); }, [loadOptions]);
 
-  const handleConvert = async (column: string) => {
-    const target = changes[column];
-    if (!target) return;
+  const handleConvert = async (column: string, target: string) => {
     const result = await run(() => convertDtype(column, target));
     if (result) {
       setColumns(result.columns);
-      setChanges({});
     }
   };
 
@@ -55,8 +50,7 @@ export function DtypeManagement() {
               <tr className="bg-muted">
                 <th className="text-left p-2 border-b font-medium">Column Name</th>
                 <th className="text-left p-2 border-b font-medium">Current Dtype</th>
-                <th className="text-left p-2 border-b font-medium">New Dtype</th>
-                <th className="text-left p-2 border-b font-medium">Action</th>
+                <th className="text-left p-2 border-b font-medium">Convert To</th>
               </tr>
             </thead>
             <tbody>
@@ -66,32 +60,22 @@ export function DtypeManagement() {
                   <td className="p-2">{col.current_dtype}</td>
                   <td className="p-2">
                     {col.options.length > 0 ? (
-                      <Select
-                        value={changes[col.name] || ""}
-                        onValueChange={(v: string | null) => setChanges((p) => ({ ...p, [col.name]: v ?? "" }))}
-                      >
-                        <SelectTrigger className="w-[140px]">
-                          <SelectValue placeholder="Select..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {col.options.map((opt) => (
-                            <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <div className="flex gap-2 flex-wrap">
+                        {col.options.map((opt) => (
+                          <Button
+                            key={opt}
+                            size="sm"
+                            variant="outline"
+                            disabled={isLoading}
+                            onClick={() => handleConvert(col.name, opt)}
+                          >
+                            {isLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : `→ ${opt}`}
+                          </Button>
+                        ))}
+                      </div>
                     ) : (
                       <span className="text-muted-foreground text-xs">No conversions available</span>
                     )}
-                  </td>
-                  <td className="p-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      disabled={!changes[col.name] || isLoading}
-                      onClick={() => handleConvert(col.name)}
-                    >
-                      {isLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Apply"}
-                    </Button>
                   </td>
                 </tr>
               ))}
