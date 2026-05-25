@@ -155,7 +155,12 @@ function ChatMessageBubble({
           </div>
         )}
 
-        {message.result?.type === "table" && message.result.data && (
+        {message.result?.type === "table" && message.result.data &&
+          typeof message.result.data === "object" &&
+          "columns" in message.result.data &&
+          Array.isArray((message.result.data as any).columns) &&
+          "rows" in message.result.data &&
+          Array.isArray((message.result.data as any).rows) && (
           <div className="mt-2 overflow-x-auto">
             <table className="text-xs border w-full">
               <thead>
