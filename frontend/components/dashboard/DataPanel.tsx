@@ -135,7 +135,7 @@ export function DataPanel({ dataset, onUploadNew }: Props) {
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="w-[320px] h-full flex flex-col rounded-2xl bg-card border border-border shadow-lg shadow-black/5 overflow-hidden shrink-0 relative"
+            className="w-[320px] h-full flex flex-col rounded-2xl bg-card shadow-lg shadow-black/5 overflow-hidden shrink-0 relative"
           >
             {/* Collapse toggle */}
             <Tooltip>

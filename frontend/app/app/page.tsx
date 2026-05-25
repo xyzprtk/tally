@@ -63,7 +63,7 @@ export default function AppPage() {
         ) : (
           <>
             <DataPanel dataset={dataset} onUploadNew={handleUpload} />
-            <div className="flex-1 flex flex-col overflow-hidden rounded-2xl bg-card border border-border shadow-lg shadow-black/5">
+            <div className="flex-1 flex flex-col overflow-hidden rounded-2xl bg-card shadow-lg shadow-black/5">
               <div className="flex-1 overflow-auto p-6">
                 <SectionTransition sectionKey={activeSection}>
                   {renderSection()}
