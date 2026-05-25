@@ -7,7 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Loader2, Table2 } from "lucide-react";
+import { toast } from "sonner";
 import { getDatasetInfo } from "@/lib/api";
 
 type OpType = "filter" | "sort" | "groupby";
@@ -41,7 +42,7 @@ export function DataOperations() {
     });
   }, []);
 
-  const handleRun = () => {
+  const handleRun = async () => {
     const params: Record<string, any> = {};
     switch (opType) {
       case "filter":
@@ -59,7 +60,12 @@ export function DataOperations() {
         params.agg_func = aggFn;
         break;
     }
-    run(opType, params);
+    try {
+      await run(opType, params);
+      toast.success("Operation applied successfully");
+    } catch (e: any) {
+      toast.error(e.message || "Failed to apply operation");
+    }
   };
 
   const operators = ["==", "!=", ">", "<", ">=", "<=", "contains"];
@@ -165,6 +171,13 @@ export function DataOperations() {
         </div>
 
         {error && <p className="text-sm text-destructive">{error}</p>}
+
+        {!result && !isLoading && (
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <Table2 className="h-8 w-8 text-muted-foreground mb-3" />
+            <p className="text-sm text-muted-foreground">Apply an operation to see the transformed data.</p>
+          </div>
+        )}
 
         {result?.type === "table" && result.data && typeof result.data === "object" && "rows" in result.data && (
           <div className="overflow-x-auto max-h-96">

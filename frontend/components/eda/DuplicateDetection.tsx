@@ -3,8 +3,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { useEda } from "@/hooks/useEda";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, ChevronDown, ChevronRight } from "lucide-react";
+import { DataTable, type DataTableColumn } from "@/components/dashboard/DataTable";
+import { DataTableSkeleton } from "@/components/dashboard/DataTableSkeleton";
+import { EmptyState } from "@/components/dashboard/EmptyState";
+import { ConfirmationDialog } from "@/components/dashboard/ConfirmationDialog";
+import { CheckCircle, ChevronDown, ChevronRight } from "lucide-react";
+import { toast } from "sonner";
 import { getDatasetInfo, getDuplicates, dropDuplicates } from "@/lib/api";
 
 export function DuplicateDetection() {
@@ -14,6 +18,7 @@ export function DuplicateDetection() {
   const [summary, setSummary] = useState<any>(null);
   const [duplicateRows, setDuplicateRows] = useState<any>(null);
   const [showDuplicates, setShowDuplicates] = useState(false);
+  const [showDropConfirm, setShowDropConfirm] = useState(false);
 
   useEffect(() => {
     getDatasetInfo().then((info) => {
@@ -35,114 +40,138 @@ export function DuplicateDetection() {
       setSummary(d.summary);
       setDuplicateRows(d.duplicate_rows);
       setShowDuplicates(true);
+      if (d.summary?.duplicate_rows === 0) {
+        toast.info("No duplicate rows found");
+      }
+    } else if (error) {
+      toast.error(error);
     }
   };
 
   const handleDrop = async () => {
     const result = await run(() => dropDuplicates(selectedCols.length > 0 ? selectedCols : undefined));
     if (result) {
+      toast.success("Duplicate rows dropped successfully");
       setSummary(null);
       setDuplicateRows(null);
       setShowDuplicates(false);
+    } else if (error) {
+      toast.error(error);
     }
+    setShowDropConfirm(false);
   };
 
+  const tableColumns: DataTableColumn[] = duplicateRows?.columns?.map((c: string) => ({
+    key: c,
+    title: c,
+  })) ?? [];
+
+  if (isLoading && !summary) {
+    return <DataTableSkeleton rows={6} cols={4} />;
+  }
+
+  if (summary && summary.duplicate_rows === 0) {
+    return (
+      <EmptyState
+        icon={<CheckCircle className="h-5 w-5" />}
+        title="No duplicates found"
+        message="All rows are unique."
+      />
+    );
+  }
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Duplicate Detection</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {error && <p className="text-sm text-destructive">{error}</p>}
+    <div className="space-y-4">
+      {error && <p className="text-sm text-destructive">{error}</p>}
 
-        <div>
-          <label className="text-sm font-medium block mb-2">
-            Select Columns for duplicate check (leave empty for all)
-          </label>
-          <div className="flex flex-wrap gap-2">
-            {colList.map((col) => (
-              <button
-                key={col}
-                onClick={() => toggleColumn(col)}
-                className={`px-3 py-1 text-xs rounded-full border transition-colors ${
-                  selectedCols.includes(col)
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-background border-input hover:bg-muted"
-                }`}
-              >
-                {col}
-              </button>
-            ))}
-          </div>
-          <p className="text-xs text-muted-foreground mt-1">
-            {selectedCols.length === 0
-              ? "All columns will be used"
-              : `${selectedCols.length} column(s) selected`}
-          </p>
-        </div>
-
-        <div className="flex gap-2">
-          <Button onClick={handleView} disabled={isLoading}>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            View Duplicates
-          </Button>
-          <Button variant="destructive" onClick={handleDrop} disabled={isLoading || !summary}>
-            Drop Duplicates
-          </Button>
-        </div>
-
-        {summary && (
-          <div className="grid grid-cols-3 gap-3">
-            <div className="border rounded p-3">
-              <div className="text-xs text-muted-foreground">Duplicate Rows</div>
-              <div className="text-lg font-bold">{summary.duplicate_rows}</div>
-            </div>
-            <div className="border rounded p-3">
-              <div className="text-xs text-muted-foreground">Duplicate %</div>
-              <div className="text-lg font-bold">{summary.duplicate_pct}%</div>
-            </div>
-            <div className="border rounded p-3">
-              <div className="text-xs text-muted-foreground">Total Rows</div>
-              <div className="text-lg font-bold">{summary.total_rows}</div>
-            </div>
-          </div>
-        )}
-
-        {summary && duplicateRows && (
-          <div>
+      <div>
+        <label className="text-sm font-medium block mb-2">
+          Select Columns for duplicate check (leave empty for all)
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {colList.map((col) => (
             <button
-              onClick={() => setShowDuplicates(!showDuplicates)}
-              className="flex items-center gap-1 text-sm font-medium hover:underline"
+              key={col}
+              onClick={() => toggleColumn(col)}
+              className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+                selectedCols.includes(col)
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-background border-input hover:bg-muted"
+              }`}
             >
-              {showDuplicates ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-              Duplicate Rows ({duplicateRows.rows?.length || 0})
+              {col}
             </button>
+          ))}
+        </div>
+        <p className="text-xs text-muted-foreground mt-1">
+          {selectedCols.length === 0
+            ? "All columns will be used"
+            : `${selectedCols.length} column(s) selected`}
+        </p>
+      </div>
 
-            {showDuplicates && duplicateRows.columns && (
-              <div className="overflow-x-auto max-h-80 mt-2">
-                <table className="w-full text-sm border">
-                  <thead>
-                    <tr className="bg-muted sticky top-0">
-                      {duplicateRows.columns.map((c: string) => (
-                        <th key={c} className="text-left p-2 border-b font-medium">{c}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {duplicateRows.rows.map((r: any, i: number) => (
-                      <tr key={i} className="border-b">
-                        {duplicateRows.columns.map((c: string) => (
-                          <td key={c} className="p-2">{String(r[c] ?? "")}</td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+      <div className="flex gap-2">
+        <Button onClick={handleView} disabled={isLoading}>
+          Find Duplicates
+        </Button>
+        <Button
+          variant="destructive"
+          onClick={() => setShowDropConfirm(true)}
+          disabled={isLoading || !summary}
+        >
+          Drop Duplicates
+        </Button>
+      </div>
+
+      {summary && (
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div className="border border-border rounded-lg p-3 bg-card">
+            <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Duplicate Rows</div>
+            <div className="text-lg font-bold">{summary.duplicate_rows}</div>
           </div>
-        )}
-      </CardContent>
-    </Card>
+          <div className="border border-border rounded-lg p-3 bg-card">
+            <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Duplicate %</div>
+            <div className="text-lg font-bold">{summary.duplicate_pct}%</div>
+          </div>
+          <div className="border border-border rounded-lg p-3 bg-card">
+            <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Total Rows</div>
+            <div className="text-lg font-bold">{summary.total_rows}</div>
+          </div>
+        </div>
+      )}
+
+      {summary && duplicateRows && (
+        <div className="space-y-2">
+          <button
+            onClick={() => setShowDuplicates(!showDuplicates)}
+            className="flex items-center gap-1 text-sm font-medium hover:underline"
+          >
+            {showDuplicates ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+            Duplicate Rows ({duplicateRows.rows?.length || 0})
+          </button>
+
+          {showDuplicates && duplicateRows.columns && (
+            <DataTable
+              columns={tableColumns}
+              rows={duplicateRows.rows}
+              maxHeight="max-h-80"
+              stickyHeader
+              rowHover
+              zebra
+            />
+          )}
+        </div>
+      )}
+
+      <ConfirmationDialog
+        open={showDropConfirm}
+        onClose={() => setShowDropConfirm(false)}
+        onConfirm={handleDrop}
+        title="Drop Duplicates"
+        description="This will remove all duplicate rows from the dataset. This action cannot be undone."
+        confirmText="Drop"
+        confirmVariant="destructive"
+      />
+    </div>
   );
 }

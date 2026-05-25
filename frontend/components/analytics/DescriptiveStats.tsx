@@ -5,7 +5,8 @@ import { useAnalytics } from "@/hooks/useAnalytics";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Loader2, BarChart3 } from "lucide-react";
+import { toast } from "sonner";
 import { getDatasetInfo } from "@/lib/api";
 
 export function DescriptiveStats() {
@@ -24,7 +25,14 @@ export function DescriptiveStats() {
     });
   }
 
-  const handleRun = () => run("descriptive_stats", { columns: columns === "all" ? "all" : [columns] });
+  const handleRun = async () => {
+    try {
+      await run("descriptive_stats", { columns: columns === "all" ? "all" : [columns] });
+      toast.success("Descriptive statistics computed");
+    } catch (e: any) {
+      toast.error(e.message || "Failed to compute statistics");
+    }
+  };
 
   return (
     <Card>
@@ -54,6 +62,13 @@ export function DescriptiveStats() {
         </div>
 
         {error && <p className="text-sm text-destructive">{error}</p>}
+
+        {!result && !isLoading && (
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <BarChart3 className="h-8 w-8 text-muted-foreground mb-3" />
+            <p className="text-sm text-muted-foreground">Run stats to see a summary of your numeric columns.</p>
+          </div>
+        )}
 
         {result?.type === "table" && result.data && typeof result.data === "object" && "rows" in result.data && (
           <div className="overflow-x-auto">

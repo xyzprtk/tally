@@ -5,7 +5,8 @@ import { useEda } from "@/hooks/useEda";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Loader2, Activity } from "lucide-react";
+import { toast } from "sonner";
 import { getDatasetInfo, getDistribution } from "@/lib/api";
 
 export function Distribution() {
@@ -27,7 +28,12 @@ export function Distribution() {
   const handleRun = async () => {
     if (!selectedCol) return;
     const res = await run(() => getDistribution(selectedCol));
-    if (res?.data) setResult(res.data);
+    if (res?.data) {
+      setResult(res.data);
+      toast.success(`Distribution analyzed for "${selectedCol}"`);
+    } else if (error) {
+      toast.error(error);
+    }
   };
 
   return (
@@ -37,6 +43,13 @@ export function Distribution() {
       </CardHeader>
       <CardContent className="space-y-4">
         {error && <p className="text-sm text-destructive">{error}</p>}
+
+        {!result && !isLoading && (
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <Activity className="h-8 w-8 text-muted-foreground mb-3" />
+            <p className="text-sm text-muted-foreground">Select a numeric column to analyze its distribution.</p>
+          </div>
+        )}
 
         <div className="flex items-end gap-4">
           <div className="space-y-2">

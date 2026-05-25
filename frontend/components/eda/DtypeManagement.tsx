@@ -5,6 +5,7 @@ import { useEda } from "@/hooks/useEda";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Download } from "lucide-react";
+import { toast } from "sonner";
 import { getDtypeOptions, convertDtype, downloadDataset } from "@/lib/api";
 import type { DtypeColumn } from "@/lib/types";
 
@@ -23,17 +24,25 @@ export function DtypeManagement() {
     const result = await run(() => convertDtype(column, target));
     if (result) {
       setColumns(result.columns);
+      toast.success(`Converted "${column}" to ${target}`);
+    } else if (error) {
+      toast.error(error);
     }
   };
 
   const handleDownload = async () => {
-    const blob = await downloadDataset();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "dataset_processed.csv";
-    a.click();
-    URL.revokeObjectURL(url);
+    try {
+      const blob = await downloadDataset();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "dataset_processed.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success("Dataset downloaded");
+    } catch (e: any) {
+      toast.error(e.message || "Download failed");
+    }
   };
 
   return (
