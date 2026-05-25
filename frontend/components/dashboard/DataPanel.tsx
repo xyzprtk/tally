@@ -1,0 +1,209 @@
+"use client";
+
+import { useState, useRef, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { ChevronLeft, ChevronRight, Upload, Copy, Check } from "lucide-react";
+import { toast } from "sonner";
+import type { DatasetInfo } from "@/lib/types";
+
+interface Props {
+  dataset: DatasetInfo;
+  onUploadNew: (file: File) => Promise<void>;
+}
+
+export function getDtypeBadgeClass(dtype: string): string {
+  const d = dtype.toLowerCase();
+  if (d.includes("int") || d.includes("float")) {
+    return "bg-blue-500/10 text-blue-400 border-blue-500/20";
+  }
+  if (d.includes("object") || d.includes("string") || d.includes("category")) {
+    return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+  }
+  if (d.includes("datetime") || d.includes("timedelta")) {
+    return "bg-amber-500/10 text-amber-400 border-amber-500/20";
+  }
+  if (d.includes("bool")) {
+    return "bg-slate-500/10 text-slate-400 border-slate-500/20";
+  }
+  return "bg-muted text-muted-foreground border-border";
+}
+
+export function DataPanel({ dataset, onUploadNew }: Props) {
+  const [collapsed, setCollapsed] = useState(false);
+  const [search, setSearch] = useState("");
+  const [copied, setCopied] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const filteredColumns = useMemo(() => {
+    if (!search.trim()) return dataset.columns;
+    return dataset.columns.filter((c) =>
+      c.name.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [dataset.columns, search]);
+
+  const numericCount = useMemo(
+    () => dataset.columns.filter((c) => getDtypeBadgeClass(c.dtype).includes("blue")).length,
+    [dataset.columns]
+  );
+
+  const handleCopy = async (name: string) => {
+    try {
+      await navigator.clipboard.writeText(name);
+      setCopied(name);
+      toast.success(`Copied "${name}" to clipboard`);
+      setTimeout(() => setCopied(null), 1500);
+    } catch {
+      toast.error("Failed to copy to clipboard");
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (f) onUploadNew(f);
+  };
+
+  return (
+    <motion.aside
+      animate={{ width: collapsed ? 48 : 280 }}
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      className="border-r bg-background flex flex-col shrink-0 overflow-hidden relative"
+    >
+      {/* Collapse toggle */}
+      <button
+        onClick={() => setCollapsed((c) => !c)}
+        className="absolute top-3 right-2 z-20 flex h-6 w-6 items-center justify-center rounded-md border border-border bg-card text-muted-foreground hover:text-foreground transition-colors"
+        aria-label={collapsed ? "Expand panel" : "Collapse panel"}
+      >
+        {collapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
+      </button>
+
+      {collapsed ? (
+        <div className="flex flex-col items-center py-4 gap-4">
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-[10px] font-medium text-muted-foreground">{dataset.row_count}</span>
+            <span className="text-[10px] text-muted-foreground">rows</span>
+          </div>
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-[10px] font-medium text-primary">{dataset.columns.length}</span>
+            <span className="text-[10px] text-muted-foreground">cols</span>
+          </div>
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Upload new dataset"
+          >
+            <Upload className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      ) : (
+        <>
+          {/* Dataset header */}
+          <div className="p-4 border-b">
+            <h3 className="font-semibold text-sm mb-1">Dataset</h3>
+            <p className="text-xs text-muted-foreground">
+              {dataset.row_count.toLocaleString()} rows · {dataset.columns.length} columns
+            </p>
+          </div>
+
+          <ScrollArea className="flex-1">
+            <div className="p-4 space-y-6">
+              {/* Column search */}
+              <div>
+                <Input
+                  placeholder="Search columns..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="h-8 text-xs"
+                />
+              </div>
+
+              {/* Column list */}
+              <div>
+                <h4 className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">
+                  Columns
+                </h4>
+                <div className="space-y-1">
+                  <AnimatePresence>
+                    {filteredColumns.map((col, i) => (
+                      <motion.div
+                        key={col.name}
+                        initial={{ opacity: 0, y: 2 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.15, delay: i * 0.02 }}
+                        className="flex items-center justify-between group cursor-pointer rounded-md px-2 py-1.5 hover:bg-accent/30 transition-colors"
+                        onClick={() => handleCopy(col.name)}
+                      >
+                        <span className="text-sm truncate mr-2">{col.name}</span>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {copied === col.name ? (
+                            <Check className="h-3 w-3 text-emerald-400" />
+                          ) : (
+                            <Copy className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                          )}
+                          <span
+                            className={`text-[10px] px-1.5 py-0.5 rounded border ${getDtypeBadgeClass(col.dtype)}`}
+                          >
+                            {col.dtype}
+                          </span>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              </div>
+
+              {/* Quick stats */}
+              <div>
+                <h4 className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">
+                  Quick Stats
+                </h4>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="rounded-lg border border-border bg-card p-2.5">
+                    <div className="text-lg font-semibold text-foreground">{dataset.row_count.toLocaleString()}</div>
+                    <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Total Rows</div>
+                  </div>
+                  <div className="rounded-lg border border-border bg-card p-2.5">
+                    <div className="text-lg font-semibold text-foreground">{dataset.columns.length}</div>
+                    <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Total Columns</div>
+                  </div>
+                  <div className="rounded-lg border border-border bg-card p-2.5">
+                    <div className="text-lg font-semibold text-primary">{numericCount}</div>
+                    <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Numeric</div>
+                  </div>
+                  <div className="rounded-lg border border-border bg-card p-2.5">
+                    <div className="text-lg font-semibold text-foreground">{dataset.columns.length - numericCount}</div>
+                    <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Categorical</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ScrollArea>
+
+          {/* Upload button */}
+          <div className="p-4 border-t">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full gap-2"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <Upload className="h-3.5 w-3.5" />
+              Upload New Dataset
+            </Button>
+          </div>
+        </>
+      )}
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".csv,.json"
+        onChange={handleFileChange}
+        className="hidden"
+      />
+    </motion.aside>
+  );
+}
