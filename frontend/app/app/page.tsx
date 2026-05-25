@@ -5,15 +5,20 @@ import { useDataset } from "@/hooks/useDataset";
 import { useSettings } from "@/hooks/useSettings";
 import { SettingsModal } from "@/components/settings/SettingsModal";
 import { UploadZone } from "@/components/upload/UploadZone";
-import { Sidebar } from "@/components/sidebar/Sidebar";
-import { AnalyticsTabs } from "@/components/analytics/AnalyticsTabs";
+import { DashboardNavbar, type DashboardSection } from "@/components/dashboard/DashboardNavbar";
+import { DataPanel } from "@/components/dashboard/DataPanel";
+import { SectionTransition } from "@/components/dashboard/SectionTransition";
 import { ChatPanel } from "@/components/chat/ChatPanel";
-import { Button } from "@/components/ui/button";
-import { Settings, MessageSquare } from "lucide-react";
+import { DataPreview } from "@/components/analytics/DataPreview";
+import { DescriptiveStats } from "@/components/analytics/DescriptiveStats";
+import { Visualizations } from "@/components/analytics/Visualizations";
+import { DataOperations } from "@/components/analytics/DataOperations";
+import { EdaTabs } from "@/components/eda/EdaTabs";
 
 export default function AppPage() {
   const { dataset, isLoading: uploadLoading, error: uploadError, upload, clearDataset } = useDataset();
   const settings = useSettings();
+  const [activeSection, setActiveSection] = useState<DashboardSection>("preview");
   const [chatOpen, setChatOpen] = useState(false);
 
   const handleUpload = async (file: File) => {
@@ -22,49 +27,62 @@ export default function AppPage() {
     await upload(file);
   };
 
-  return (
-    <div className="flex flex-col h-screen">
-      <header className="flex items-center justify-between px-6 py-3 border-b bg-background shrink-0">
-        <h1 className="text-lg font-semibold">Tally</h1>
-        <div className="flex items-center gap-2">
-          {dataset && (
-            <Button variant="outline" size="sm" onClick={() => setChatOpen(!chatOpen)} className="gap-2">
-              <MessageSquare className="h-4 w-4" />
-              Chat
-            </Button>
-          )}
-          <Button variant="ghost" size="icon" onClick={settings.open} className="relative">
-            <Settings className="h-5 w-5" />
-            {!settings.settings?.api_key && (
-              <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full" />
-            )}
-          </Button>
-        </div>
-      </header>
+  const renderSection = () => {
+    switch (activeSection) {
+      case "preview":
+        return <DataPreview />;
+      case "stats":
+        return <DescriptiveStats />;
+      case "viz":
+        return <Visualizations />;
+      case "ops":
+        return <DataOperations />;
+      case "eda":
+        return <EdaTabs />;
+      default:
+        return <DataPreview />;
+    }
+  };
 
-      <div className="flex flex-1 overflow-hidden">
+  return (
+    <div className="flex flex-col h-screen bg-background">
+      <DashboardNavbar
+        active={activeSection}
+        onNavigate={setActiveSection}
+        onOpenSettings={settings.open}
+      />
+
+      <div className="flex flex-1 overflow-hidden pt-20">
         {!dataset ? (
           <div className="flex-1 flex items-center justify-center p-8">
             <UploadZone onUpload={handleUpload} isLoading={uploadLoading} error={uploadError} />
           </div>
         ) : (
           <>
-            <Sidebar dataset={dataset} onUploadNew={handleUpload} />
+            <DataPanel dataset={dataset} onUploadNew={handleUpload} />
             <div className="flex-1 flex flex-col overflow-hidden">
               <div className="flex-1 overflow-auto p-6">
-                <AnalyticsTabs />
+                <SectionTransition sectionKey={activeSection}>
+                  {renderSection()}
+                </SectionTransition>
               </div>
-              {chatOpen && (
-                <div className="border-t shrink-0" style={{ height: "40%" }}>
-                  <ChatPanel settings={settings.settings} />
-                </div>
-              )}
             </div>
           </>
         )}
       </div>
 
-      <SettingsModal open={settings.isOpen} onClose={settings.close} onSave={settings.save} settings={settings.settings} />
+      <ChatPanel
+        settings={settings.settings}
+        open={chatOpen}
+        onClose={() => setChatOpen(false)}
+      />
+
+      <SettingsModal
+        open={settings.isOpen}
+        onClose={settings.close}
+        onSave={settings.save}
+        settings={settings.settings}
+      />
     </div>
   );
 }

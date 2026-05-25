@@ -32,6 +32,11 @@ export async function getDatasetInfo(): Promise<DatasetInfo & { has_dataset: boo
   return handleResponse(res);
 }
 
+export async function getPreview(tail = false): Promise<{ columns: string[]; rows: Record<string, any>[] }> {
+  const res = await fetch(`${API_BASE}/api/dataset/preview${tail ? "?tail=true" : ""}`);
+  return handleResponse(res);
+}
+
 export async function runAnalytics(req: AnalyticsRequest): Promise<AnalyticsResult> {
   const res = await fetch(`${API_BASE}/api/analyze/basic`, {
     method: "POST",
