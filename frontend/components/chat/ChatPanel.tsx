@@ -27,6 +27,7 @@ interface ChatPanelProps {
   open: boolean;
   onClose: () => void;
   onOpen: () => void;
+  onWidthChange?: (width: number) => void;
 }
 
 function TypingIndicator() {
@@ -241,11 +242,16 @@ function ChatInputArea({ onSend, disabled }: { onSend: (content: string) => void
   );
 }
 
-export function ChatPanel({ settings, open, onClose, onOpen }: ChatPanelProps) {
+export function ChatPanel({ settings, open, onClose, onOpen, onWidthChange }: ChatPanelProps) {
   const { messages, isLoading, send } = useChat();
   const bottomRef = useRef<HTMLDivElement>(null);
-  const [panelWidth, setPanelWidth] = useState(380);
+  const [panelWidth, setPanelWidthState] = useState(380);
   const isDragging = useRef(false);
+
+  const setPanelWidth = (w: number) => {
+    setPanelWidthState(w);
+    onWidthChange?.(w);
+  };
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });

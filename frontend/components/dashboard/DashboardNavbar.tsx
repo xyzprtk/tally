@@ -12,6 +12,8 @@ interface Props {
   active: DashboardSection;
   onNavigate: (section: DashboardSection) => void;
   onOpenSettings: () => void;
+  chatOpen?: boolean;
+  chatWidth?: number;
 }
 
 const navItems: { key: DashboardSection; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
@@ -22,13 +24,17 @@ const navItems: { key: DashboardSection; label: string; icon: React.ComponentTyp
   { key: "eda", label: "EDA", icon: Search },
 ];
 
-export function DashboardNavbar({ active, onNavigate, onOpenSettings }: Props) {
+export function DashboardNavbar({ active, onNavigate, onOpenSettings, chatOpen = false, chatWidth = 380 }: Props) {
   return (
     <motion.header
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="fixed top-4 left-1/2 -translate-x-1/2 z-50"
+      className="fixed top-4 z-50"
+      style={{
+        left: chatOpen ? `calc(50% - ${chatWidth / 2}px)` : "50%",
+        transform: "translateX(-50%)",
+      }}
     >
       <nav className="flex items-center gap-2 px-2 py-1.5 bg-card/80 backdrop-blur-md border border-border rounded-full shadow-lg shadow-black/5">
         {/* Logo */}

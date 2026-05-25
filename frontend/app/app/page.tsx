@@ -20,6 +20,7 @@ export default function AppPage() {
   const settings = useSettings();
   const [activeSection, setActiveSection] = useState<DashboardSection>("preview");
   const [chatOpen, setChatOpen] = useState(false);
+  const [chatWidth, setChatWidth] = useState(380);
 
   const handleUpload = async (file: File) => {
     clearDataset();
@@ -50,6 +51,8 @@ export default function AppPage() {
         active={activeSection}
         onNavigate={setActiveSection}
         onOpenSettings={settings.open}
+        chatOpen={chatOpen}
+        chatWidth={chatWidth}
       />
 
       <div className="flex flex-1 overflow-hidden pt-20">
@@ -76,6 +79,7 @@ export default function AppPage() {
         open={chatOpen}
         onClose={() => setChatOpen(false)}
         onOpen={() => setChatOpen(true)}
+        onWidthChange={setChatWidth}
       />
 
       <SettingsModal
