@@ -51,9 +51,11 @@ export function MissingValues() {
 
   const handleFill = async () => {
     if (!confirmAction || confirmAction.type !== "fill" || !confirmAction.method) return;
-    const result = await run(() => fillMissing(confirmAction.column, confirmAction.method));
+    const col = confirmAction.column;
+    const method = confirmAction.method;
+    const result = await run(() => fillMissing(col, method));
     if (result) {
-      toast.success(`Filled missing values in "${confirmAction.column}" with ${confirmAction.method}`);
+      toast.success(`Filled missing values in "${col}" with ${method}`);
       await load();
     } else if (error) {
       toast.error(error);

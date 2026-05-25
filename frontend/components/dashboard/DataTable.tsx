@@ -157,7 +157,7 @@ export function DataTable({
                       }`}
                     >
                       <Tooltip>
-                        <TooltipTrigger asChild>
+                        <TooltipTrigger>
                           <span className="block max-w-[200px] truncate">
                             {str}
                           </span>
