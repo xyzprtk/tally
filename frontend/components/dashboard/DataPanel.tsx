@@ -103,7 +103,7 @@ export function DataPanel({ dataset, onUploadNew }: Props) {
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="w-[280px] flex flex-col rounded-2xl bg-card border border-border shadow-lg shadow-black/5 overflow-hidden shrink-0 relative"
+        className="w-[320px] h-full flex flex-col rounded-2xl bg-card border border-border shadow-lg shadow-black/5 overflow-hidden shrink-0 relative"
       >
         {/* Collapse toggle */}
         <Tooltip>
@@ -121,7 +121,7 @@ export function DataPanel({ dataset, onUploadNew }: Props) {
           </TooltipContent>
         </Tooltip>
 
-        <ScrollArea className="flex-1">
+        <ScrollArea className="flex-1 h-full">
           <div className="p-5 space-y-5">
             {/* Dataset header card */}
             <div className="rounded-xl border border-border bg-background p-4">
