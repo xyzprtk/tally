@@ -114,14 +114,12 @@ export function DataPanel({ dataset, onUploadNew }: Props) {
             className="flex flex-col justify-start pt-2 shrink-0"
           >
             <Tooltip>
-              <TooltipTrigger>
-                <button
-                  onClick={() => setCollapsed(false)}
-                  className="flex h-12 w-12 items-center justify-center rounded-2xl bg-card border border-border shadow-lg shadow-black/10 text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200 hover:scale-105 active:scale-95"
-                  aria-label="Expand sidebar"
-                >
-                  <Menu className="h-5 w-5" />
-                </button>
+              <TooltipTrigger
+                onClick={() => setCollapsed(false)}
+                className="flex h-12 w-12 items-center justify-center rounded-2xl bg-card border border-border shadow-lg shadow-black/10 text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200 hover:scale-105 active:scale-95"
+                aria-label="Expand sidebar"
+              >
+                <Menu className="h-5 w-5" />
               </TooltipTrigger>
               <TooltipContent side="right">
                 Expand sidebar
@@ -139,14 +137,12 @@ export function DataPanel({ dataset, onUploadNew }: Props) {
           >
             {/* Collapse toggle */}
             <Tooltip>
-              <TooltipTrigger>
-                <button
-                  onClick={() => setCollapsed(true)}
-                  className="absolute top-4 right-4 z-20 flex h-7 w-7 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                  aria-label="Collapse sidebar"
-                >
-                  <ChevronLeft className="h-3.5 w-3.5" />
-                </button>
+              <TooltipTrigger
+                onClick={() => setCollapsed(true)}
+                className="absolute top-4 right-4 z-20 flex h-7 w-7 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                aria-label="Collapse sidebar"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" />
               </TooltipTrigger>
               <TooltipContent side="right">
                 Collapse sidebar
