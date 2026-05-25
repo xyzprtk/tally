@@ -71,160 +71,159 @@ export function DataPanel({ dataset, onUploadNew }: Props) {
     if (f) onUploadNew(f);
   };
 
-  return (
-    <TooltipProvider>
-      <motion.aside
-        animate={{ width: collapsed ? 56 : 280 }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className={`flex flex-col shrink-0 overflow-hidden relative transition-colors duration-300 ${
-          collapsed
-            ? "bg-transparent border-r-0"
-            : "bg-background border-r border-border"
-        }`}
-      >
-        {collapsed ? (
-          <div className="flex items-start justify-center pt-4 h-full">
-            <Tooltip>
-              <TooltipTrigger>
-                <motion.button
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 0.1, duration: 0.2 }}
-                  onClick={() => setCollapsed(false)}
-                  className="flex h-11 w-11 items-center justify-center rounded-full bg-card border border-border shadow-lg shadow-black/10 text-muted-foreground hover:text-foreground hover:bg-muted hover:scale-105 active:scale-95 transition-all duration-200"
-                  aria-label="Expand sidebar"
-                >
-                  <Menu className="h-5 w-5" />
-                </motion.button>
-              </TooltipTrigger>
-              <TooltipContent side="right" className="text-xs">
-                Expand sidebar
-              </TooltipContent>
-            </Tooltip>
-          </div>
-        ) : (
-          <>
-            {/* Collapse toggle */}
-            <Tooltip>
-              <TooltipTrigger>
-                <button
-                  onClick={() => setCollapsed(true)}
-                  className="absolute top-3 right-2 z-20 flex h-6 w-6 items-center justify-center rounded-md border border-border bg-card text-muted-foreground hover:text-foreground transition-colors"
-                  aria-label="Collapse sidebar"
-                >
-                  <ChevronLeft className="h-3 w-3" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="right" className="text-xs">
-                Collapse sidebar
-              </TooltipContent>
-            </Tooltip>
-
-            {/* Dataset header */}
-            <div className="p-4 border-b">
-              <h3 className="font-semibold text-sm mb-1">Dataset</h3>
-              <p className="text-xs text-muted-foreground">
-                {dataset.row_count.toLocaleString()} rows · {dataset.columns.length} columns
-              </p>
-            </div>
-
-            <ScrollArea className="flex-1">
-              <div className="p-4 space-y-6">
-                {/* Column search */}
-                <div>
-                  <Input
-                    placeholder="Search columns..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="h-8 text-xs"
-                  />
-                </div>
-
-                {/* Column list */}
-                <div>
-                  <h4 className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">
-                    Columns
-                  </h4>
-                  <div className="space-y-1">
-                    <AnimatePresence>
-                      {filteredColumns.map((col, i) => (
-                        <motion.div
-                          key={col.name}
-                          initial={{ opacity: 0, y: 2 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.15, delay: i * 0.02 }}
-                          className="flex items-center justify-between group cursor-pointer rounded-md px-2 py-1.5 hover:bg-accent/30 transition-colors"
-                          onClick={() => handleCopy(col.name)}
-                        >
-                          <span className="text-sm truncate mr-2">{col.name}</span>
-                          <div className="flex items-center gap-1.5 shrink-0">
-                            {copied === col.name ? (
-                              <Check className="h-3 w-3 text-emerald-400" />
-                            ) : (
-                              <Copy className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                            )}
-                            <span
-                              className={`text-[10px] px-1.5 py-0.5 rounded border ${getDtypeBadgeClass(col.dtype)}`}
-                            >
-                              {col.dtype}
-                            </span>
-                          </div>
-                        </motion.div>
-                      ))}
-                    </AnimatePresence>
-                  </div>
-                </div>
-
-                {/* Quick stats */}
-                <div>
-                  <h4 className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">
-                    Quick Stats
-                  </h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="rounded-lg border border-border bg-card p-2.5">
-                      <div className="text-lg font-semibold text-foreground">{dataset.row_count.toLocaleString()}</div>
-                      <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Total Rows</div>
-                    </div>
-                    <div className="rounded-lg border border-border bg-card p-2.5">
-                      <div className="text-lg font-semibold text-foreground">{dataset.columns.length}</div>
-                      <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Total Columns</div>
-                    </div>
-                    <div className="rounded-lg border border-border bg-card p-2.5">
-                      <div className="text-lg font-semibold text-primary">{numericCount}</div>
-                      <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Numeric</div>
-                    </div>
-                    <div className="rounded-lg border border-border bg-card p-2.5">
-                      <div className="text-lg font-semibold text-foreground">{dataset.columns.length - numericCount}</div>
-                      <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Categorical</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </ScrollArea>
-
-            {/* Upload button */}
-            <div className="p-4 border-t">
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full gap-2"
-                onClick={() => fileInputRef.current?.click()}
+  if (collapsed) {
+    return (
+      <TooltipProvider>
+        <div className="flex flex-col justify-start pt-2">
+          <Tooltip>
+            <TooltipTrigger>
+              <motion.button
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.1, duration: 0.2 }}
+                onClick={() => setCollapsed(false)}
+                className="flex h-12 w-12 items-center justify-center rounded-2xl bg-card border border-border shadow-lg shadow-black/10 text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200 hover:scale-105 active:scale-95"
+                aria-label="Expand sidebar"
               >
-                <Upload className="h-3.5 w-3.5" />
-                Upload New Dataset
-              </Button>
-            </div>
-          </>
-        )}
+                <Menu className="h-5 w-5" />
+              </motion.button>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="text-xs">
+              Expand sidebar
+            </TooltipContent>
+          </Tooltip>
+        </div>
+      </TooltipProvider>
+    );
+  }
 
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".csv,.json"
-          onChange={handleFileChange}
-          className="hidden"
-        />
-      </motion.aside>
-    </TooltipProvider>
+  return (
+    <motion.aside
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      className="w-[280px] flex flex-col rounded-2xl bg-card border border-border shadow-lg shadow-black/5 overflow-hidden shrink-0 relative"
+    >
+      {/* Collapse toggle */}
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <button
+              onClick={() => setCollapsed(true)}
+              className="absolute top-3 right-3 z-20 flex h-7 w-7 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              aria-label="Collapse sidebar"
+            >
+              <ChevronLeft className="h-3.5 w-3.5" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="right" className="text-xs">
+            Collapse sidebar
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+
+      {/* Dataset header */}
+      <div className="p-4 border-b border-border">
+        <h3 className="font-semibold text-sm mb-1">Dataset</h3>
+        <p className="text-xs text-muted-foreground">
+          {dataset.row_count.toLocaleString()} rows · {dataset.columns.length} columns
+        </p>
+      </div>
+
+      <ScrollArea className="flex-1">
+        <div className="p-4 space-y-6">
+          {/* Column search */}
+          <div>
+            <Input
+              placeholder="Search columns..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="h-8 text-xs"
+            />
+          </div>
+
+          {/* Column list */}
+          <div>
+            <h4 className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">
+              Columns
+            </h4>
+            <div className="space-y-1">
+              <AnimatePresence>
+                {filteredColumns.map((col, i) => (
+                  <motion.div
+                    key={col.name}
+                    initial={{ opacity: 0, y: 2 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.15, delay: i * 0.02 }}
+                    className="flex items-center justify-between group cursor-pointer rounded-md px-2 py-1.5 hover:bg-accent/30 transition-colors"
+                    onClick={() => handleCopy(col.name)}
+                  >
+                    <span className="text-sm truncate mr-2">{col.name}</span>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {copied === col.name ? (
+                        <Check className="h-3 w-3 text-emerald-400" />
+                      ) : (
+                        <Copy className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                      )}
+                      <span
+                        className={`text-[10px] px-1.5 py-0.5 rounded border ${getDtypeBadgeClass(col.dtype)}`}
+                      >
+                        {col.dtype}
+                      </span>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* Quick stats */}
+          <div>
+            <h4 className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">
+              Quick Stats
+            </h4>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="rounded-xl border border-border bg-background p-2.5">
+                <div className="text-lg font-semibold text-foreground">{dataset.row_count.toLocaleString()}</div>
+                <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Total Rows</div>
+              </div>
+              <div className="rounded-xl border border-border bg-background p-2.5">
+                <div className="text-lg font-semibold text-foreground">{dataset.columns.length}</div>
+                <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Total Columns</div>
+              </div>
+              <div className="rounded-xl border border-border bg-background p-2.5">
+                <div className="text-lg font-semibold text-primary">{numericCount}</div>
+                <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Numeric</div>
+              </div>
+              <div className="rounded-xl border border-border bg-background p-2.5">
+                <div className="text-lg font-semibold text-foreground">{dataset.columns.length - numericCount}</div>
+                <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Categorical</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ScrollArea>
+
+      {/* Upload button */}
+      <div className="p-4 border-t border-border">
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full gap-2"
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <Upload className="h-3.5 w-3.5" />
+          Upload New Dataset
+        </Button>
+      </div>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".csv,.json"
+        onChange={handleFileChange}
+        className="hidden"
+      />
+    </motion.aside>
   );
 }
