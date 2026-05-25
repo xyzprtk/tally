@@ -36,7 +36,7 @@ export function PlotCard({ src, alt, title, className }: PlotCardProps) {
 
   return (
     <>
-      <div className={`group relative rounded-xl overflow-hidden border border-border bg-card ${className || ""}`}>
+      <div className={`group relative rounded-xl overflow-hidden border border-border bg-card max-w-3xl mx-auto ${className || ""}`}>
         <img
           src={imageSrc}
           alt={alt}

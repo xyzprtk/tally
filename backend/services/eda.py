@@ -227,7 +227,7 @@ def outliers_detail(df: pd.DataFrame, params: dict):
     outlier_rows = df[mask]
 
     # Boxplot
-    fig, ax = plt.subplots(figsize=(6, 6))
+    fig, ax = plt.subplots(figsize=(4.5, 4.5))
     ax.boxplot(series, labels=[column])
     ax.set_ylabel(column)
     ax.set_title(f"Box Plot of {column}")
@@ -294,7 +294,7 @@ def distribution(df: pd.DataFrame, params: dict):
         raise HTTPException(status_code=400, detail="Distribution is only available for numeric columns")
 
     # Histogram
-    plt.figure(figsize=(8, 6))
+    plt.figure(figsize=(6.5, 4))
     plt.hist(series, bins=20, edgecolor="none", alpha=0.85)
     plt.xlabel(column)
     plt.ylabel("Frequency")

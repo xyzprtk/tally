@@ -69,7 +69,7 @@ def scatter_plot(df: pd.DataFrame, params: dict) -> BasicAnalyticsResponse:
     y_col = params["y_column"]
     if x_col not in df.columns or y_col not in df.columns:
         raise HTTPException(status_code=400, detail="Column not found")
-    plt.figure(figsize=(8, 6))
+    plt.figure(figsize=(6.5, 4))
     plt.scatter(df[x_col], df[y_col], alpha=0.6)
     plt.xlabel(x_col)
     plt.ylabel(y_col)
@@ -86,7 +86,7 @@ def bar_chart(df: pd.DataFrame, params: dict) -> BasicAnalyticsResponse:
     for col in [cat_col, val_col]:
         if col not in df.columns:
             raise HTTPException(status_code=400, detail=f"Column '{col}' not found")
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(7.5, 4))
     df.groupby(cat_col)[val_col].agg(agg_func).plot(kind="bar")
     plt.xlabel(cat_col)
     plt.ylabel(f"{agg_func} of {val_col}")
@@ -102,7 +102,7 @@ def histogram(df: pd.DataFrame, params: dict) -> BasicAnalyticsResponse:
     bins = params.get("bins", 20)
     if col not in df.columns:
         raise HTTPException(status_code=400, detail=f"Column '{col}' not found")
-    plt.figure(figsize=(8, 6))
+    plt.figure(figsize=(6.5, 4))
     plt.hist(df[col].dropna(), bins=bins, edgecolor="none", alpha=0.85)
     plt.xlabel(col)
     plt.ylabel("Frequency")
@@ -119,7 +119,7 @@ def line_chart(df: pd.DataFrame, params: dict) -> BasicAnalyticsResponse:
         if col not in df.columns:
             raise HTTPException(status_code=400, detail=f"Column '{col}' not found")
     sorted_df = df.sort_values(by=x_col)
-    plt.figure(figsize=(8, 6))
+    plt.figure(figsize=(6.5, 4))
     plt.plot(sorted_df[x_col], sorted_df[y_col], marker="o", linestyle="-")
     plt.xlabel(x_col)
     plt.ylabel(y_col)
@@ -133,7 +133,7 @@ def box_plot(df: pd.DataFrame, params: dict) -> BasicAnalyticsResponse:
     col = params["column"]
     if col not in df.columns:
         raise HTTPException(status_code=400, detail=f"Column '{col}' not found")
-    plt.figure(figsize=(6, 8))
+    plt.figure(figsize=(4.5, 5))
     plt.boxplot(df[col].dropna(), labels=[col])
     plt.ylabel(col)
     plt.title(f"Box Plot of {col}")
@@ -147,7 +147,7 @@ def correlation_heatmap(df: pd.DataFrame, params: dict) -> BasicAnalyticsRespons
     if numeric_df.empty:
         raise HTTPException(status_code=400, detail="No numeric columns for correlation")
     corr = numeric_df.corr()
-    fig, ax = plt.subplots(figsize=(10, 8))
+    fig, ax = plt.subplots(figsize=(7.5, 5.5))
     im = ax.imshow(corr, cmap="coolwarm", aspect="auto", vmin=-1, vmax=1)
     cbar = plt.colorbar(im, ax=ax)
     cbar.ax.yaxis.set_tick_params(color=plt.rcParams["text.color"])
