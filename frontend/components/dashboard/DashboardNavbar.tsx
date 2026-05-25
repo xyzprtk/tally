@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Settings, LayoutDashboard, BarChart3, Image, Wrench, Search } from "lucide-react";
+import { Settings } from "lucide-react";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import TallyLogo from "@/components/landing/TallyLogo";
 
@@ -16,12 +16,12 @@ interface Props {
   chatWidth?: number;
 }
 
-const navItems: { key: DashboardSection; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
-  { key: "preview", label: "Data Preview", icon: LayoutDashboard },
-  { key: "stats", label: "Stats", icon: BarChart3 },
-  { key: "viz", label: "Viz", icon: Image },
-  { key: "ops", label: "Ops", icon: Wrench },
-  { key: "eda", label: "EDA", icon: Search },
+const navItems: { key: DashboardSection; label: string }[] = [
+  { key: "preview", label: "Preview" },
+  { key: "stats", label: "Stats" },
+  { key: "viz", label: "Viz" },
+  { key: "ops", label: "Ops" },
+  { key: "eda", label: "EDA" },
 ];
 
 export function DashboardNavbar({ active, onNavigate, onOpenSettings, chatOpen = false, chatWidth = 380 }: Props) {
@@ -52,12 +52,11 @@ export function DashboardNavbar({ active, onNavigate, onOpenSettings, chatOpen =
           <div className="flex items-center gap-1">
             {navItems.map((item) => {
               const isActive = active === item.key;
-              const Icon = item.icon;
               return (
                 <button
                   key={item.key}
                   onClick={() => onNavigate(item.key)}
-                  className={`relative flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-full transition-colors duration-200 ${
+                  className={`relative px-3.5 py-1.5 text-sm font-medium rounded-full transition-colors duration-200 ${
                     isActive
                       ? "text-primary-foreground"
                       : "text-muted-foreground hover:text-foreground"
@@ -70,10 +69,7 @@ export function DashboardNavbar({ active, onNavigate, onOpenSettings, chatOpen =
                       transition={{ type: "spring", stiffness: 400, damping: 30 }}
                     />
                   )}
-                  <span className="relative z-10 flex items-center gap-1.5">
-                    <Icon className="h-3.5 w-3.5" />
-                    <span className="hidden md:inline">{item.label}</span>
-                  </span>
+                  <span className="relative z-10">{item.label}</span>
                 </button>
               );
             })}

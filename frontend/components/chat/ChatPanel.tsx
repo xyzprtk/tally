@@ -9,9 +9,6 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Send,
   X,
-  MessageSquare,
-  User,
-  Sparkles,
   GripVertical,
   Copy,
   Check,
@@ -76,11 +73,11 @@ function ChatMessageBubble({
     >
       {/* Avatar */}
       <div
-        className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${
-          isUser ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
+        className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold ${
+          isUser ? "bg-primary/20 text-primary" : "bg-primary text-primary-foreground"
         }`}
       >
-        {isUser ? <User className="h-3.5 w-3.5" /> : <Sparkles className="h-3.5 w-3.5" />}
+        {isUser ? "You" : "T"}
       </div>
 
       {/* Bubble */}
@@ -295,10 +292,10 @@ export function ChatPanel({ settings, open, onClose, onOpen, onWidthChange }: Ch
             exit={{ scale: 0, opacity: 0 }}
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
             onClick={onOpen}
-            className="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20 flex items-center justify-center hover:bg-tally-hover transition-colors"
-            aria-label="Open chat"
+            className="fixed bottom-6 right-6 z-40 h-10 px-4 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20 flex items-center justify-center hover:bg-tally-hover transition-colors text-xs font-semibold"
+            aria-label="Open Ask Tally"
           >
-            <MessageSquare className="h-5 w-5" />
+            Ask Tally
           </motion.button>
         )}
       </AnimatePresence>
@@ -326,8 +323,10 @@ export function ChatPanel({ settings, open, onClose, onOpen, onWidthChange }: Ch
               {/* Header */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-primary" />
-                  <h3 className="font-semibold text-sm">AI Chat</h3>
+                  <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold">
+                    T
+                  </div>
+                  <h3 className="font-semibold text-sm">Ask Tally</h3>
                 </div>
                 <button
                   onClick={onClose}
@@ -342,14 +341,12 @@ export function ChatPanel({ settings, open, onClose, onOpen, onWidthChange }: Ch
               <ScrollArea className="flex-1 p-4">
                 {!settings?.api_key ? (
                   <div className="flex flex-col items-center justify-center h-full text-center px-4">
-                    <Sparkles className="h-8 w-8 text-muted-foreground mb-3" />
                     <p className="text-sm text-muted-foreground">
-                      Configure your API key in Settings to use the chat.
+                      Configure your API key in Settings to use Ask Tally.
                     </p>
                   </div>
                 ) : messages.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full text-center px-4">
-                    <MessageSquare className="h-8 w-8 text-muted-foreground mb-3" />
                     <p className="text-sm text-muted-foreground">
                       Ask a question about your dataset.
                     </p>
@@ -365,8 +362,8 @@ export function ChatPanel({ settings, open, onClose, onOpen, onWidthChange }: Ch
                     ))}
                     {isLoading && (
                       <div className="flex gap-3">
-                        <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center shrink-0">
-                          <Sparkles className="h-3.5 w-3.5 text-muted-foreground" />
+                        <div className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center shrink-0 text-[10px] font-bold">
+                          T
                         </div>
                         <div className="bg-card border border-border rounded-xl px-4 py-2">
                           <TypingIndicator />

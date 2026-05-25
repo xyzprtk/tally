@@ -11,7 +11,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Menu, ChevronLeft, Upload, Copy, Check, Database } from "lucide-react";
+import { Menu, ChevronLeft, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 import type { DatasetInfo } from "@/lib/types";
 
@@ -157,10 +157,7 @@ export function DataPanel({ dataset, onUploadNew }: Props) {
               <div className="p-5 space-y-5">
                 {/* Dataset header card */}
                 <div className="rounded-xl border border-border bg-background p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Database className="h-4 w-4 text-primary" />
-                    <h3 className="font-semibold text-sm">Dataset</h3>
-                  </div>
+                  <h3 className="font-semibold text-sm mb-1">Dataset</h3>
                   <p className="text-xs text-muted-foreground mb-3">
                     {dataset.row_count.toLocaleString()} rows · {dataset.columns.length} columns
                   </p>
@@ -243,10 +240,9 @@ export function DataPanel({ dataset, onUploadNew }: Props) {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-full gap-2 rounded-xl h-9"
+                  className="w-full rounded-xl h-9 text-xs font-medium"
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  <Upload className="h-3.5 w-3.5" />
                   Upload New Dataset
                 </Button>
               </div>
