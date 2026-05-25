@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Activity } from "lucide-react";
 import { toast } from "sonner";
 import { getDatasetInfo, getDistribution } from "@/lib/api";
+import { PlotCard } from "@/components/shared/PlotCard";
 
 export function Distribution() {
   const { isLoading, error, run } = useEda();
@@ -68,9 +69,7 @@ export function Distribution() {
         </div>
 
         {result?.image && (
-          <div className="border rounded-lg overflow-hidden">
-            <img src={`data:image/png;base64,${result.image}`} alt="Histogram" className="max-w-full h-auto" />
-          </div>
+          <PlotCard src={result.image} alt={`Distribution of ${selectedCol}`} title={`Distribution of ${selectedCol}`} />
         )}
 
         {result?.stats && (

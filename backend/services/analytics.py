@@ -8,12 +8,13 @@ import matplotlib.pyplot as plt
 from fastapi import HTTPException
 
 from models.schemas import BasicAnalyticsResponse
+from services.plot_theme import apply_theme
 
 
 def _plot_to_base64() -> str:
     buf = io.BytesIO()
     plt.tight_layout()
-    plt.savefig(buf, format="png", dpi=100, bbox_inches="tight")
+    plt.savefig(buf, format="png", dpi=100, bbox_inches="tight", facecolor=plt.gcf().get_facecolor())
     buf.seek(0)
     b64 = base64.b64encode(buf.read()).decode("utf-8")
     plt.close("all")
@@ -63,6 +64,7 @@ def descriptive_stats(df: pd.DataFrame, params: dict) -> BasicAnalyticsResponse:
 
 
 def scatter_plot(df: pd.DataFrame, params: dict) -> BasicAnalyticsResponse:
+    apply_theme(params.get("theme", "dark"))
     x_col = params["x_column"]
     y_col = params["y_column"]
     if x_col not in df.columns or y_col not in df.columns:
@@ -77,6 +79,7 @@ def scatter_plot(df: pd.DataFrame, params: dict) -> BasicAnalyticsResponse:
 
 
 def bar_chart(df: pd.DataFrame, params: dict) -> BasicAnalyticsResponse:
+    apply_theme(params.get("theme", "dark"))
     cat_col = params["category_column"]
     val_col = params["value_column"]
     agg_func = params.get("agg_func", "mean")
@@ -94,12 +97,13 @@ def bar_chart(df: pd.DataFrame, params: dict) -> BasicAnalyticsResponse:
 
 
 def histogram(df: pd.DataFrame, params: dict) -> BasicAnalyticsResponse:
+    apply_theme(params.get("theme", "dark"))
     col = params["column"]
     bins = params.get("bins", 20)
     if col not in df.columns:
         raise HTTPException(status_code=400, detail=f"Column '{col}' not found")
     plt.figure(figsize=(8, 6))
-    plt.hist(df[col].dropna(), bins=bins, edgecolor="black", alpha=0.7)
+    plt.hist(df[col].dropna(), bins=bins, edgecolor="none", alpha=0.85)
     plt.xlabel(col)
     plt.ylabel("Frequency")
     plt.title(f"Histogram of {col}")
@@ -108,6 +112,7 @@ def histogram(df: pd.DataFrame, params: dict) -> BasicAnalyticsResponse:
 
 
 def line_chart(df: pd.DataFrame, params: dict) -> BasicAnalyticsResponse:
+    apply_theme(params.get("theme", "dark"))
     x_col = params["x_column"]
     y_col = params["y_column"]
     for col in [x_col, y_col]:
@@ -124,6 +129,7 @@ def line_chart(df: pd.DataFrame, params: dict) -> BasicAnalyticsResponse:
 
 
 def box_plot(df: pd.DataFrame, params: dict) -> BasicAnalyticsResponse:
+    apply_theme(params.get("theme", "dark"))
     col = params["column"]
     if col not in df.columns:
         raise HTTPException(status_code=400, detail=f"Column '{col}' not found")
@@ -136,13 +142,16 @@ def box_plot(df: pd.DataFrame, params: dict) -> BasicAnalyticsResponse:
 
 
 def correlation_heatmap(df: pd.DataFrame, params: dict) -> BasicAnalyticsResponse:
+    apply_theme(params.get("theme", "dark"))
     numeric_df = df.select_dtypes(include="number")
     if numeric_df.empty:
         raise HTTPException(status_code=400, detail="No numeric columns for correlation")
     corr = numeric_df.corr()
     fig, ax = plt.subplots(figsize=(10, 8))
     im = ax.imshow(corr, cmap="coolwarm", aspect="auto", vmin=-1, vmax=1)
-    plt.colorbar(im, ax=ax)
+    cbar = plt.colorbar(im, ax=ax)
+    cbar.ax.yaxis.set_tick_params(color=plt.rcParams["text.color"])
+    plt.setp(plt.getp(cbar.ax.axes, "yticklabels"), color=plt.rcParams["text.color"])
     ax.set_xticks(range(len(corr.columns)))
     ax.set_yticks(range(len(corr.columns)))
     ax.set_xticklabels(corr.columns, rotation=45, ha="right")
@@ -258,7 +267,8 @@ OPERATIONS = {
 }
 
 
-def run_operation(df: pd.DataFrame, operation: str, params: dict) -> BasicAnalyticsResponse:
+def run_operation(df: pd.DataFrame, operation: str, params: dict, theme: str = "dark") -> BasicAnalyticsResponse:
     if operation not in OPERATIONS:
         raise HTTPException(status_code=400, detail=f"Unknown operation: {operation}")
+    params = {**params, "theme": theme}
     return OPERATIONS[operation](df, params)

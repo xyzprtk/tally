@@ -16,6 +16,7 @@ import {
 import { toast } from "sonner";
 import Markdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { PlotCard } from "@/components/shared/PlotCard";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import type { Settings } from "@/lib/types";
 
@@ -145,11 +146,7 @@ function ChatMessageBubble({
         {/* Result rendering */}
         {message.result?.type === "image" && typeof message.result.data === "string" && (
           <div className="mt-2">
-            <img
-              src={`data:image/png;base64,${message.result.data}`}
-              alt="Result chart"
-              className="max-w-full rounded-lg border border-border"
-            />
+            <PlotCard src={message.result.data} alt="Result chart" />
           </div>
         )}
 

@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from fastapi import HTTPException
 
 from models.schemas import BasicAnalyticsResponse
+from services.plot_theme import apply_theme
 
 # ---------------------------------------------------------------------------
 # Plot helpers (duplicated from analytics.py to keep services independent)
@@ -16,7 +17,7 @@ from models.schemas import BasicAnalyticsResponse
 def _plot_to_base64() -> str:
     buf = io.BytesIO()
     plt.tight_layout()
-    plt.savefig(buf, format="png", dpi=100, bbox_inches="tight")
+    plt.savefig(buf, format="png", dpi=100, bbox_inches="tight", facecolor=plt.gcf().get_facecolor())
     buf.seek(0)
     b64 = base64.b64encode(buf.read()).decode("utf-8")
     plt.close("all")
@@ -208,6 +209,7 @@ def outliers_summary(df: pd.DataFrame, params: dict):
 
 
 def outliers_detail(df: pd.DataFrame, params: dict):
+    apply_theme(params.get("theme", "dark"))
     column = params["column"]
     if column not in df.columns:
         raise HTTPException(status_code=400, detail=f"Column '{column}' not found")
@@ -281,6 +283,7 @@ def remove_outliers(df: pd.DataFrame, params: dict) -> pd.DataFrame:
 # ---------------------------------------------------------------------------
 
 def distribution(df: pd.DataFrame, params: dict):
+    apply_theme(params.get("theme", "dark"))
     column = params["column"]
     if column not in df.columns:
         raise HTTPException(status_code=400, detail=f"Column '{column}' not found")
@@ -292,7 +295,7 @@ def distribution(df: pd.DataFrame, params: dict):
 
     # Histogram
     plt.figure(figsize=(8, 6))
-    plt.hist(series, bins=20, edgecolor="black", alpha=0.7)
+    plt.hist(series, bins=20, edgecolor="none", alpha=0.85)
     plt.xlabel(column)
     plt.ylabel("Frequency")
     plt.title(f"Distribution of {column}")

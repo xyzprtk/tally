@@ -1,6 +1,7 @@
 "use client";
 
 import type { ChatMessage as ChatMessageType } from "@/lib/types";
+import { PlotCard } from "@/components/shared/PlotCard";
 
 interface Props {
   message: ChatMessageType;
@@ -17,7 +18,7 @@ export function ChatMessage({ message, onRetry }: Props) {
     if (r.type === "image" && typeof r.data === "string") {
       return (
         <div className="mt-2">
-          <img src={`data:image/png;base64,${r.data}`} alt="Result chart" className="max-w-full rounded border" />
+          <PlotCard src={r.data} alt="Result chart" />
         </div>
       );
     }

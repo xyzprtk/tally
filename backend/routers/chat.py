@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 
 from services import dataset, llm
 from sandbox import executor
@@ -9,8 +9,9 @@ router = APIRouter()
 
 
 @router.post("/api/chat", response_model=ChatResponse)
-async def chat(req: ChatRequest):
+async def chat(req: ChatRequest, request: Request):
     df = dataset.get_dataset()
+    theme = request.headers.get("x-theme", "dark")
 
     messages = llm.build_messages(req.messages, df)
 
@@ -26,7 +27,7 @@ async def chat(req: ChatRequest):
     if code is None:
         return ChatResponse(response=llm_response, result=None, error=None)
 
-    result = await executor.execute_code(code, df)
+    result = await executor.execute_code(code, df, theme=theme)
 
     error = result.get("error")
     result_data = None

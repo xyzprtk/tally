@@ -11,6 +11,7 @@ import { ShieldCheck, ChevronDown, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { getOutliersSummary, getOutliersDetail, removeOutliers } from "@/lib/api";
 import type { OutlierRow } from "@/lib/types";
+import { PlotCard } from "@/components/shared/PlotCard";
 import { motion, AnimatePresence } from "framer-motion";
 
 const columnsDef: DataTableColumn[] = [
@@ -132,13 +133,11 @@ export function OutlierDetection() {
             <h3 className="font-semibold text-sm">Outlier Detail: {expandedCol}</h3>
 
             {detail.boxplot && (
-              <div className="border border-border rounded-lg overflow-hidden">
-                <img
-                  src={`data:image/png;base64,${detail.boxplot}`}
-                  alt={`Box plot of ${expandedCol}`}
-                  className="max-w-full h-auto"
-                />
-              </div>
+              <PlotCard
+                src={detail.boxplot}
+                alt={`Box plot of ${expandedCol}`}
+                title={`Box Plot of ${expandedCol}`}
+              />
             )}
 
             {detail.summary && (

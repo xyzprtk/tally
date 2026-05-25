@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Image } from "lucide-react";
 import { toast } from "sonner";
 import { getDatasetInfo } from "@/lib/api";
+import { PlotCard } from "@/components/shared/PlotCard";
 
 type ChartType = "scatter_plot" | "bar_chart" | "histogram" | "line_chart" | "box_plot" | "correlation_heatmap";
 
@@ -172,9 +173,7 @@ export function Visualizations() {
         )}
 
         {result?.type === "image" && typeof result.data === "string" && (
-          <div className="border rounded-lg overflow-hidden">
-            <img src={`data:image/png;base64,${result.data}`} alt="Chart" className="max-w-full h-auto" />
-          </div>
+          <PlotCard src={result.data} alt="Chart" title={chartType.replace(/_/g, " ")} />
         )}
       </CardContent>
     </Card>

@@ -9,6 +9,17 @@ import type {
 
 const API_BASE = "http://localhost:8000";
 
+function getTheme(): string {
+  if (typeof document !== "undefined") {
+    return document.documentElement.classList.contains("dark") ? "dark" : "light";
+  }
+  return "dark";
+}
+
+function themeHeaders(): Record<string, string> {
+  return { "x-theme": getTheme() };
+}
+
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
@@ -28,19 +39,23 @@ export async function uploadDataset(file: File): Promise<DatasetInfo> {
 }
 
 export async function getDatasetInfo(): Promise<DatasetInfo & { has_dataset: boolean }> {
-  const res = await fetch(`${API_BASE}/api/dataset/info`);
+  const res = await fetch(`${API_BASE}/api/dataset/info`, {
+    headers: themeHeaders(),
+  });
   return handleResponse(res);
 }
 
 export async function getPreview(tail = false): Promise<{ columns: string[]; rows: Record<string, any>[] }> {
-  const res = await fetch(`${API_BASE}/api/dataset/preview${tail ? "?tail=true" : ""}`);
+  const res = await fetch(`${API_BASE}/api/dataset/preview${tail ? "?tail=true" : ""}`, {
+    headers: themeHeaders(),
+  });
   return handleResponse(res);
 }
 
 export async function runAnalytics(req: AnalyticsRequest): Promise<AnalyticsResult> {
   const res = await fetch(`${API_BASE}/api/analyze/basic`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...themeHeaders() },
     body: JSON.stringify(req),
   });
   return handleResponse<AnalyticsResult>(res);
@@ -49,14 +64,16 @@ export async function runAnalytics(req: AnalyticsRequest): Promise<AnalyticsResu
 export async function sendChatMessage(req: ChatRequest): Promise<ChatResponse> {
   const res = await fetch(`${API_BASE}/api/chat`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...themeHeaders() },
     body: JSON.stringify(req),
   });
   return handleResponse<ChatResponse>(res);
 }
 
 export async function downloadDataset(): Promise<Blob> {
-  const res = await fetch(`${API_BASE}/api/dataset/download`);
+  const res = await fetch(`${API_BASE}/api/dataset/download`, {
+    headers: themeHeaders(),
+  });
   if (!res.ok) throw new Error("Download failed");
   return res.blob();
 }
@@ -64,28 +81,32 @@ export async function downloadDataset(): Promise<Blob> {
 // EDA endpoints
 
 export async function getDtypeOptions(): Promise<DtypeOptions> {
-  const res = await fetch(`${API_BASE}/api/eda/dtype-options`);
+  const res = await fetch(`${API_BASE}/api/eda/dtype-options`, {
+    headers: themeHeaders(),
+  });
   return handleResponse<DtypeOptions>(res);
 }
 
 export async function convertDtype(column: string, targetDtype: string): Promise<DtypeOptions> {
   const res = await fetch(`${API_BASE}/api/eda/convert-dtype`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...themeHeaders() },
     body: JSON.stringify({ column, target_dtype: targetDtype }),
   });
   return handleResponse<DtypeOptions>(res);
 }
 
 export async function getMissingSummary(sortBy = "missing_pct", sortDir = "desc"): Promise<AnalyticsResult> {
-  const res = await fetch(`${API_BASE}/api/eda/missing?sort_by=${sortBy}&sort_dir=${sortDir}`);
+  const res = await fetch(`${API_BASE}/api/eda/missing?sort_by=${sortBy}&sort_dir=${sortDir}`, {
+    headers: themeHeaders(),
+  });
   return handleResponse<AnalyticsResult>(res);
 }
 
 export async function fillMissing(column: string, method: string): Promise<{ message: string }> {
   const res = await fetch(`${API_BASE}/api/eda/fill-missing`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...themeHeaders() },
     body: JSON.stringify({ column, method }),
   });
   return handleResponse(res);
@@ -94,51 +115,61 @@ export async function fillMissing(column: string, method: string): Promise<{ mes
 export async function dropColumn(column: string): Promise<{ message: string }> {
   const res = await fetch(`${API_BASE}/api/eda/drop-column`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...themeHeaders() },
     body: JSON.stringify({ column }),
   });
   return handleResponse(res);
 }
 
 export async function getOutliersSummary(): Promise<AnalyticsResult> {
-  const res = await fetch(`${API_BASE}/api/eda/outliers`);
+  const res = await fetch(`${API_BASE}/api/eda/outliers`, {
+    headers: themeHeaders(),
+  });
   return handleResponse<AnalyticsResult>(res);
 }
 
 export async function getOutliersDetail(column: string): Promise<AnalyticsResult> {
-  const res = await fetch(`${API_BASE}/api/eda/outliers/detail?column=${encodeURIComponent(column)}`);
+  const res = await fetch(`${API_BASE}/api/eda/outliers/detail?column=${encodeURIComponent(column)}`, {
+    headers: themeHeaders(),
+  });
   return handleResponse<AnalyticsResult>(res);
 }
 
 export async function removeOutliers(column: string, action: string): Promise<{ message: string }> {
   const res = await fetch(`${API_BASE}/api/eda/outliers/remove`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...themeHeaders() },
     body: JSON.stringify({ column, action }),
   });
   return handleResponse(res);
 }
 
 export async function getDistribution(column: string): Promise<AnalyticsResult> {
-  const res = await fetch(`${API_BASE}/api/eda/distribution?column=${encodeURIComponent(column)}`);
+  const res = await fetch(`${API_BASE}/api/eda/distribution?column=${encodeURIComponent(column)}`, {
+    headers: themeHeaders(),
+  });
   return handleResponse<AnalyticsResult>(res);
 }
 
 export async function getValueCounts(topN = 20): Promise<AnalyticsResult> {
-  const res = await fetch(`${API_BASE}/api/eda/value-counts?top_n=${topN}`);
+  const res = await fetch(`${API_BASE}/api/eda/value-counts?top_n=${topN}`, {
+    headers: themeHeaders(),
+  });
   return handleResponse<AnalyticsResult>(res);
 }
 
 export async function getDuplicates(columns?: string[]): Promise<AnalyticsResult> {
   const qs = columns?.length ? `?columns=${columns.map(encodeURIComponent).join(",")}` : "";
-  const res = await fetch(`${API_BASE}/api/eda/duplicates${qs}`);
+  const res = await fetch(`${API_BASE}/api/eda/duplicates${qs}`, {
+    headers: themeHeaders(),
+  });
   return handleResponse<AnalyticsResult>(res);
 }
 
 export async function dropDuplicates(columns?: string[]): Promise<{ message: string }> {
   const res = await fetch(`${API_BASE}/api/eda/duplicates/drop`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...themeHeaders() },
     body: JSON.stringify({ columns: columns || [] }),
   });
   return handleResponse(res);
@@ -147,6 +178,7 @@ export async function dropDuplicates(columns?: string[]): Promise<{ message: str
 export async function restoreDataset(): Promise<DtypeOptions> {
   const res = await fetch(`${API_BASE}/api/eda/restore`, {
     method: "POST",
+    headers: themeHeaders(),
   });
   return handleResponse<DtypeOptions>(res);
 }

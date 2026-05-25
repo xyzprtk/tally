@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 
 from services import dataset, analytics
 from models.schemas import BasicAnalyticsRequest, BasicAnalyticsResponse
@@ -7,9 +7,10 @@ router = APIRouter()
 
 
 @router.post("/api/analyze/basic", response_model=BasicAnalyticsResponse)
-async def run_basic_analytics(req: BasicAnalyticsRequest):
+async def run_basic_analytics(req: BasicAnalyticsRequest, request: Request):
     df = dataset.get_dataset()
-    return analytics.run_operation(df, req.operation, req.params)
+    theme = request.headers.get("x-theme", "dark")
+    return analytics.run_operation(df, req.operation, req.params, theme=theme)
 
 
 @router.get("/api/dataset/info")
