@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 
 from services import dataset, analytics
 from models.schemas import BasicAnalyticsRequest, BasicAnalyticsResponse
@@ -7,9 +7,10 @@ router = APIRouter()
 
 
 @router.post("/api/analyze/basic", response_model=BasicAnalyticsResponse)
-async def run_basic_analytics(req: BasicAnalyticsRequest):
+async def run_basic_analytics(req: BasicAnalyticsRequest, request: Request):
     df = dataset.get_dataset()
-    return analytics.run_operation(df, req.operation, req.params)
+    theme = request.headers.get("x-theme", "dark")
+    return analytics.run_operation(df, req.operation, req.params, theme=theme)
 
 
 @router.get("/api/dataset/info")
@@ -25,3 +26,14 @@ async def get_dataset_info():
         "sample": sample,
         "has_dataset": True,
     }
+
+
+@router.get("/api/dataset/preview")
+async def get_dataset_preview(tail: bool = False):
+    if not dataset.has_dataset():
+        raise HTTPException(status_code=404, detail="No dataset uploaded")
+    df = dataset.get_dataset()
+    preview_df = df.tail(10) if tail else df.head(10)
+    columns = list(preview_df.columns)
+    rows = preview_df.fillna(value=None).to_dict(orient="records")
+    return {"columns": columns, "rows": rows}

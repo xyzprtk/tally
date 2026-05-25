@@ -7,8 +7,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Loader2, Image } from "lucide-react";
+import { toast } from "sonner";
 import { getDatasetInfo } from "@/lib/api";
+import { PlotCard } from "@/components/shared/PlotCard";
 
 type ChartType = "scatter_plot" | "bar_chart" | "histogram" | "line_chart" | "box_plot" | "correlation_heatmap";
 
@@ -38,7 +40,7 @@ export function Visualizations() {
     });
   }, []);
 
-  const handleRun = () => {
+  const handleRun = async () => {
     const params: Record<string, any> = {};
     switch (chartType) {
       case "scatter_plot":
@@ -59,7 +61,12 @@ export function Visualizations() {
         params.column = column;
         break;
     }
-    run(chartType, params);
+    try {
+      await run(chartType, params);
+      toast.success("Visualization generated");
+    } catch (e: any) {
+      toast.error(e.message || "Failed to generate visualization");
+    }
   };
 
   return (
@@ -158,10 +165,15 @@ export function Visualizations() {
 
         {error && <p className="text-sm text-destructive">{error}</p>}
 
-        {result?.type === "image" && typeof result.data === "string" && (
-          <div className="border rounded-lg overflow-hidden">
-            <img src={`data:image/png;base64,${result.data}`} alt="Chart" className="max-w-full h-auto" />
+        {!result && !isLoading && (
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <Image className="h-8 w-8 text-muted-foreground mb-3" />
+            <p className="text-sm text-muted-foreground">Select parameters and click Generate to create a chart.</p>
           </div>
+        )}
+
+        {result?.type === "image" && typeof result.data === "string" && (
+          <PlotCard src={result.data} alt="Chart" title={chartType.replace(/_/g, " ")} />
         )}
       </CardContent>
     </Card>

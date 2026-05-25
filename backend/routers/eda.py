@@ -1,11 +1,15 @@
 import io
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
 from services import dataset, eda
 from models.schemas import BasicAnalyticsResponse
 
 router = APIRouter()
+
+
+def _extract_theme(request: Request) -> str:
+    return request.headers.get("x-theme", "dark")
 
 
 # ---------------------------------------------------------------------------
@@ -63,9 +67,9 @@ async def outliers_summary():
 
 
 @router.get("/api/eda/outliers/detail")
-async def outliers_detail(column: str):
+async def outliers_detail(column: str, request: Request):
     df = dataset.get_dataset()
-    return eda.outliers_detail(df, {"column": column})
+    return eda.outliers_detail(df, {"column": column, "theme": _extract_theme(request)})
 
 
 @router.post("/api/eda/outliers/remove")
@@ -81,9 +85,9 @@ async def remove_outliers(params: dict):
 # ---------------------------------------------------------------------------
 
 @router.get("/api/eda/distribution")
-async def distribution(column: str):
+async def distribution(column: str, request: Request):
     df = dataset.get_dataset()
-    return eda.distribution(df, {"column": column})
+    return eda.distribution(df, {"column": column, "theme": _extract_theme(request)})
 
 
 # ---------------------------------------------------------------------------
