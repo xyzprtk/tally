@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ChevronLeft, ChevronRight, Upload, Copy, Check } from "lucide-react";
+import { Menu, ChevronLeft, Upload, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 import type { DatasetInfo } from "@/lib/types";
 
@@ -71,35 +71,28 @@ export function DataPanel({ dataset, onUploadNew }: Props) {
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
       className="border-r bg-background flex flex-col shrink-0 overflow-hidden relative"
     >
-      {/* Collapse toggle */}
-      <button
-        onClick={() => setCollapsed((c) => !c)}
-        className="absolute top-3 right-2 z-20 flex h-6 w-6 items-center justify-center rounded-md border border-border bg-card text-muted-foreground hover:text-foreground transition-colors"
-        aria-label={collapsed ? "Expand panel" : "Collapse panel"}
-      >
-        {collapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
-      </button>
-
       {collapsed ? (
-        <div className="flex flex-col items-center py-4 gap-4">
-          <div className="flex flex-col items-center gap-1">
-            <span className="text-[10px] font-medium text-muted-foreground">{dataset.row_count}</span>
-            <span className="text-[10px] text-muted-foreground">rows</span>
-          </div>
-          <div className="flex flex-col items-center gap-1">
-            <span className="text-[10px] font-medium text-primary">{dataset.columns.length}</span>
-            <span className="text-[10px] text-muted-foreground">cols</span>
-          </div>
+        <div className="flex flex-col items-center h-full pt-3">
+          {/* Expand button - hamburger */}
           <button
-            onClick={() => fileInputRef.current?.click()}
-            className="flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted-foreground hover:text-foreground transition-colors"
-            aria-label="Upload new dataset"
+            onClick={() => setCollapsed(false)}
+            className="flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            aria-label="Expand panel"
           >
-            <Upload className="h-3.5 w-3.5" />
+            <Menu className="h-4 w-4" />
           </button>
         </div>
       ) : (
         <>
+          {/* Collapse toggle */}
+          <button
+            onClick={() => setCollapsed(true)}
+            className="absolute top-3 right-2 z-20 flex h-6 w-6 items-center justify-center rounded-md border border-border bg-card text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Collapse panel"
+          >
+            <ChevronLeft className="h-3 w-3" />
+          </button>
+
           {/* Dataset header */}
           <div className="p-4 border-b">
             <h3 className="font-semibold text-sm mb-1">Dataset</h3>
