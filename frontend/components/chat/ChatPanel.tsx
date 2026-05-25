@@ -26,6 +26,7 @@ interface ChatPanelProps {
   settings: Settings | null;
   open: boolean;
   onClose: () => void;
+  onOpen: () => void;
 }
 
 function TypingIndicator() {
@@ -235,7 +236,7 @@ function ChatInputArea({ onSend, disabled }: { onSend: (content: string) => void
   );
 }
 
-export function ChatPanel({ settings, open, onClose }: ChatPanelProps) {
+export function ChatPanel({ settings, open, onClose, onOpen }: ChatPanelProps) {
   const { messages, isLoading, send } = useChat();
   const bottomRef = useRef<HTMLDivElement>(null);
   const [panelWidth, setPanelWidth] = useState(380);
@@ -282,7 +283,7 @@ export function ChatPanel({ settings, open, onClose }: ChatPanelProps) {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
-            onClick={onClose}
+            onClick={onOpen}
             className="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20 flex items-center justify-center hover:bg-tally-hover transition-colors"
             aria-label="Open chat"
           >

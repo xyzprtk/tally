@@ -75,6 +75,7 @@ export default function AppPage() {
         settings={settings.settings}
         open={chatOpen}
         onClose={() => setChatOpen(false)}
+        onOpen={() => setChatOpen(true)}
       />
 
       <SettingsModal
