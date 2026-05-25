@@ -25,3 +25,14 @@ async def get_dataset_info():
         "sample": sample,
         "has_dataset": True,
     }
+
+
+@router.get("/api/dataset/preview")
+async def get_dataset_preview(tail: bool = False):
+    if not dataset.has_dataset():
+        raise HTTPException(status_code=404, detail="No dataset uploaded")
+    df = dataset.get_dataset()
+    preview_df = df.tail(10) if tail else df.head(10)
+    columns = list(preview_df.columns)
+    rows = preview_df.fillna(value=None).to_dict(orient="records")
+    return {"columns": columns, "rows": rows}
